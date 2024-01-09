@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="parentContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="491.0" spacing="10.0" styleClass="header-container" stylesheets="@../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AddConsumerController">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="451.0">
+         <children>
+            <Label text="Add Consumer">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" prefHeight="44.0" prefWidth="509.0" spacing="15.0">
+         <children>
+            <VBox prefHeight="48.0" prefWidth="242.0">
+               <children>
+                  <Label text="First Name" />
+                  <TextField fx:id="fName" prefHeight="25.0" prefWidth="214.0" />
+               </children>
+            </VBox>
+            <VBox prefHeight="48.0" prefWidth="242.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="151.0" text="Contact Number" />
+                  <TextField fx:id="contactNo" prefHeight="25.0" prefWidth="214.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" prefHeight="44.0" prefWidth="509.0" spacing="15.0">
+         <children>
+            <VBox prefHeight="48.0" prefWidth="242.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="151.0" text="Middle Name(Optional)" />
+                  <TextField fx:id="mName" prefHeight="25.0" prefWidth="214.0" />
+               </children>
+            </VBox>
+            <VBox prefHeight="48.0" prefWidth="242.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="151.0" text="Email Address(Optional)" />
+                  <TextField fx:id="emailAd" prefHeight="25.0" prefWidth="214.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" prefHeight="44.0" prefWidth="509.0" spacing="15.0">
+         <children>
+            <VBox prefHeight="44.0" prefWidth="257.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="151.0" text="Last Name" />
+                  <TextField fx:id="lName" prefHeight="25.0" prefWidth="214.0" />
+               </children>
+            </VBox>
+            <HBox alignment="BOTTOM_LEFT" prefHeight="44.0" prefWidth="258.0">
+               <children>
+                  <VBox prefHeight="44.0" prefWidth="195.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="151.0" text="Purok" />
+                        <ComboBox fx:id="purok" prefHeight="27.0" prefWidth="187.0" />
+                     </children>
+                  </VBox>
+                  <Button fx:id="addPurok" mnemonicParsing="false" onAction="#addPurok" prefHeight="27.0" prefWidth="31.0" styleClass="dashboard-button" text="+" />
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" prefHeight="44.0" prefWidth="509.0" spacing="15.0">
+         <children>
+            <VBox prefHeight="48.0" prefWidth="242.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="151.0" text="Suffix" />
+                  <ChoiceBox fx:id="suffix" prefHeight="27.0" prefWidth="235.0" />
+               </children>
+            </VBox>
+            <VBox prefHeight="48.0" prefWidth="242.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="151.0" text="Postal Code(Optional)" />
+                  <TextField fx:id="postalCode" prefHeight="25.0" prefWidth="214.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <HBox alignment="BOTTOM_RIGHT" prefHeight="38.0" prefWidth="451.0" spacing="10.0">
+         <children>
+            <HBox alignment="BOTTOM_LEFT" prefHeight="28.0" prefWidth="217.0" spacing="10.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#cancelAdd" prefHeight="25.0" prefWidth="110.0" styleClass="cancel-btn" text="Cancel" />
+                  <Button mnemonicParsing="false" onAction="#addConsumer" prefHeight="25.0" prefWidth="110.0" styleClass="modal-btn" text="Add" />
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>

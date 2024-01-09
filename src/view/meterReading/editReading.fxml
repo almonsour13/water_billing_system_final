@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="container" prefHeight="289.0" prefWidth="294.0" style="-fx-background-color: white;" stylesheets="@../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.meterReading.EditReadingController">
+   <children>
+      <TextField fx:id="originalValue" disable="true" layoutX="21.0" layoutY="77.0" prefHeight="27.0" prefWidth="252.0" />
+      <Label layoutX="21.0" layoutY="60.0" text="Original Value:" />
+      <TextField fx:id="newValue" layoutX="21.0" layoutY="125.0" onKeyReleased="#enableButton" prefHeight="27.0" prefWidth="252.0" />
+      <Label layoutX="21.0" layoutY="108.0" text="New Value:" />
+      <Label layoutX="22.0" layoutY="158.0" text="Reason:" />
+      <Button fx:id="sendRequest" disable="true" layoutX="161.0" layoutY="250.0" mnemonicParsing="false" onAction="#sendRequest" prefHeight="25.0" prefWidth="112.0" styleClass="dashboard-button" text="Send Request" />
+      <Button layoutX="94.0" layoutY="250.0" mnemonicParsing="false" onAction="#cancel" prefHeight="25.0" prefWidth="60.0" styleClass="cancel-btn" text="Cancel" />
+      <Label layoutX="21.0" layoutY="22.0" text="Edit Current Reading Value">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="reasonField" focusTraversable="false" layoutX="21.0" layoutY="175.0" onKeyReleased="#enableButton" prefHeight="60.0" prefWidth="252.0" />
+   </children>
+</AnchorPane>

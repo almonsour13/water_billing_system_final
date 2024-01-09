@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1100.0" spacing="10.0" stylesheets="@../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.meterNumber.MeterNumberController">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="702.0" spacing="10.0">
+         <children>
+            <Label text="Search:" />
+            <TextField prefHeight="25.0" prefWidth="170.0" promptText="Search" />
+            <Label text="Month:" />
+            <ChoiceBox fx:id="monthChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+            <Label text="Year:" />
+            <ChoiceBox fx:id="yearChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+            <Label text="Status:" />
+            <ChoiceBox fx:id="statusChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+            <Label text="Meter Location" />
+            <ChoiceBox fx:id="meterLocChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+         </children>
+      </HBox>
+      <VBox prefHeight="551.0" prefWidth="1080.0" style="-fx-background-color: white;" styleClass="header-container">
+         <children>
+            <TableView fx:id="meterNumberTable" prefHeight="564.0" prefWidth="1060.0">
+               <columns>
+                  <TableColumn fx:id="noCol" prefWidth="42.0" styleClass="nameCol" text="No" />
+                  <TableColumn fx:id="meterNumberCol" prefWidth="117.0" styleClass="nameCol" text="Meter Number" />
+                  <TableColumn fx:id="meterLocationCol" prefWidth="135.0" styleClass="nameCol" text="Meter Location" />
+                  <TableColumn fx:id="installationDateCol" prefWidth="174.0" styleClass="nameCol" text="Installation Date" />
+                  <TableColumn fx:id="nameCol" prefWidth="174.0" styleClass="nameCol" text="Current Owner" />
+                  <TableColumn fx:id="statusCol" prefWidth="193.0" text="Meter Status" />
+                  <TableColumn fx:id="actionCol" prefWidth="223.0" text="Action" />
+               </columns>
+            </TableView>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</VBox>

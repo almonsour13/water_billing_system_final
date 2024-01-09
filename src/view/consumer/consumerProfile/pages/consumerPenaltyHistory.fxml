@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox prefHeight="287.0" prefWidth="1060.0" styleClass="header-container" stylesheets="@../../../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.consumer.consumerProfile.pages.ConsumerPenaltyHistoryController">
+   <children>
+      <VBox prefHeight="551.0" prefWidth="1080.0" style="-fx-background-color: white;" styleClass="header-container">
+         <children>
+            <TableView fx:id="penaltyTable" prefHeight="564.0" prefWidth="1060.0">
+               <columns>
+                  <TableColumn fx:id="noCol" prefWidth="29.0" styleClass="nameCol" text="No" />
+                  <TableColumn fx:id="meterNumCol" prefWidth="103.0" styleClass="nameCol" text="Meter Number" />
+                  <TableColumn fx:id="meterLocCol" prefWidth="104.0" styleClass="nameCol" text="Meter Location" />
+                  <TableColumn fx:id="bDateCol" prefWidth="99.0" text="Billing Date" />
+                  <TableColumn fx:id="bAmountCol" prefWidth="92.0" text="Bill Amount" />
+                  <TableColumn fx:id="pDateCol" prefWidth="104.0" text="Penalty Date" />
+                  <TableColumn fx:id="pTypeCol" prefWidth="111.0" text="Penalty Type" />
+                  <TableColumn fx:id="pAmountCol" prefWidth="116.0" text="Penalty Amount" />
+                  <TableColumn fx:id="totalAmountCol" prefWidth="134.0" text="Total Amount" />
+                  <TableColumn fx:id="statusCol" prefWidth="167.0" text="Status" />
+               </columns>
+            </TableView>
+         </children>
+      </VBox>
+   </children>
+</HBox>

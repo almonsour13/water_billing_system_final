@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.chart.StackedBarChart?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1100.0" spacing="10.0" stylesheets="@../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.reports.ReportsController">
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+   <children>
+      <HBox prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: transparent;" styleClass="header-container">
+         <children>
+            <HBox prefHeight="35.0" prefWidth="488.0" />
+            <HBox alignment="CENTER_RIGHT" prefHeight="35.0" prefWidth="592.0" spacing="10.0">
+               <children>
+                  <ChoiceBox fx:id="monthChoiceBox" prefHeight="27.0" prefWidth="107.0" />
+                  <ChoiceBox fx:id="yearChoiceBox" prefHeight="27.0" prefWidth="103.0" />
+               </children>
+            </HBox>
+         </children></HBox>
+      <HBox prefHeight="281.0" prefWidth="1080.0" spacing="10.0">
+         <children>
+            <VBox prefHeight="281.0" prefWidth="711.0" styleClass="header-container">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="619.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="429.0">
+                           <children>
+                              <Label text="Payment Collecction" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="28.0" prefWidth="456.0" />
+                     </children>
+                  </HBox>
+                  <StackedBarChart fx:id="paymentCollectionChart" legendVisible="false" prefHeight="235.0" prefWidth="618.0">
+                    <xAxis>
+                      <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis side="LEFT" />
+                    </yAxis>
+                  </StackedBarChart>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+            <VBox prefHeight="313.0" prefWidth="434.0" styleClass="header-container">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="27.0" prefWidth="413.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Label text="Bill Summary" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="233.0" prefWidth="413.0">
+                     <children>
+                        <StackPane prefHeight="229.0" prefWidth="220.0" style="-fx-background-color: transparent;">
+                           <children>
+                              <VBox alignment="CENTER" prefHeight="229.0" prefWidth="236.0" />
+                              <PieChart fx:id="billsChart" labelsVisible="false" legendVisible="false" prefHeight="229.0" prefWidth="225.0" />
+                              <Circle fill="WHITE" radius="65.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                              <VBox alignment="CENTER" prefHeight="211.0" prefWidth="221.0" />
+                           </children>
+                        </StackPane>
+                        <VBox alignment="CENTER" prefHeight="197.0" prefWidth="134.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="134.0" spacing="5.0">
+                                 <children>
+                                    <Circle fill="#009e0d" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                    <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="78.0">
+                                       <children>
+                                          <Label text="Collected" />
+                                       </children>
+                                    </HBox>
+                                    <Label fx:id="collectedLabel" prefHeight="17.0" prefWidth="41.0" text="132" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="134.0" spacing="5.0">
+                                 <children>
+                                    <Circle fill="#ffa31f" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                    <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="78.0">
+                                       <children>
+                                          <Label prefHeight="17.0" prefWidth="74.0" text="Not Collected" />
+                                       </children>
+                                    </HBox>
+                                    <Label fx:id="notCollectedLabel" prefHeight="17.0" prefWidth="34.0" text="132" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+         </children>
+      </HBox>
+      <HBox prefHeight="281.0" prefWidth="1080.0" spacing="10.0">
+         <children>
+            <VBox prefHeight="281.0" prefWidth="711.0" styleClass="header-container">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="619.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="429.0">
+                           <children>
+                              <Label text="Payment Collecction" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="28.0" prefWidth="456.0">
+                           <children>
+                              <ChoiceBox prefHeight="27.0" prefWidth="107.0" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </HBox>
+                  <StackedBarChart fx:id="paymentCollectionChart1" legendVisible="false" prefHeight="235.0" prefWidth="618.0">
+                     <xAxis>
+                        <CategoryAxis side="BOTTOM" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis side="LEFT" />
+                     </yAxis>
+                  </StackedBarChart>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+            <VBox prefHeight="313.0" prefWidth="434.0" styleClass="header-container">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="27.0" prefWidth="413.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Label text="Bill Summary" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <ChoiceBox prefHeight="27.0" prefWidth="107.0" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="233.0" prefWidth="413.0">
+                     <children>
+                        <StackPane prefHeight="227.0" prefWidth="246.0" style="-fx-background-color: transparent;">
+                           <children>
+                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" />
+                              <PieChart fx:id="billsChart1" labelsVisible="false" legendVisible="false" prefHeight="173.0" prefWidth="173.0" />
+                              <Circle fill="WHITE" radius="70.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                              <VBox alignment="CENTER" prefHeight="239.0" prefWidth="261.0">
+                                 <children>
+                                    <Label fx:id="totalBillsLabel1" alignment="CENTER" prefHeight="33.0" prefWidth="103.0" text="132123" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                    <Label alignment="CENTER" prefHeight="23.0" prefWidth="103.0" text="Total Bills" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </StackPane>
+                        <VBox alignment="CENTER" prefHeight="197.0" prefWidth="134.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="134.0" spacing="5.0">
+                                 <children>
+                                    <Circle fill="#009e0d" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                    <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="70.0">
+                                       <children>
+                                          <Label text="Paid:" />
+                                       </children>
+                                    </HBox>
+                                    <Label fx:id="paidLabel1" text="132" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="134.0" spacing="5.0">
+                                 <children>
+                                    <Circle fill="#ffa31f" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                    <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="70.0">
+                                       <children>
+                                          <Label text="Unpaid" />
+                                       </children>
+                                    </HBox>
+                                    <Label fx:id="unpaidLabel1" text="132" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</VBox>

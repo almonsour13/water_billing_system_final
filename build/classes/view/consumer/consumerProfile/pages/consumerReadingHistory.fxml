@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox prefHeight="287.0" prefWidth="1060.0" styleClass="header-container" stylesheets="@../../../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.consumer.consumerProfile.pages.ConsumerReadingHistoryController">
+   <children>
+      <VBox prefHeight="287.0" prefWidth="781.0" style="-fx-background-color: white;" styleClass="header-container">
+         <children>
+            <TableView fx:id="meterReadingTable" prefHeight="287.0" prefWidth="812.0" stylesheets="@../../../../assets/dashboard.css">
+               <columns>
+                  <TableColumn fx:id="noCol" prefWidth="30.0" text="No" />
+                  <TableColumn fx:id="meterNoCol" prefWidth="99.0" text="Meter Number" />
+                  <TableColumn fx:id="meterLocationCol" prefWidth="109.0" text="Meter Location" />
+                  <TableColumn fx:id="prevReadingCol" prefWidth="132.0" text="Previous Reading" />
+                  <TableColumn fx:id="curReadingCol" prefWidth="139.0" text="Current Reading" />
+                  <TableColumn fx:id="dateAddedCol" prefWidth="97.0" text="Date Added" />
+                  <TableColumn fx:id="eneteredByCol" minWidth="1.0" prefWidth="98.0" text="Entered By" />
+                  <TableColumn fx:id="statusCol" minWidth="0.0" text="Status" />
+               </columns>
+            </TableView>
+         </children>
+      </VBox>
+   </children>
+</HBox>

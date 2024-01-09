@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="container" prefHeight="347.0" prefWidth="294.0" style="-fx-background-color: white;" stylesheets="@../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.meterReading.ViewEditRequestStatusController">
+   <children>
+      <TextField fx:id="originalValue" disable="true" layoutX="21.0" layoutY="107.0" prefHeight="27.0" prefWidth="252.0" />
+      <Label layoutX="21.0" layoutY="90.0" text="Original Value:" />
+      <TextField fx:id="newValue" disable="true" layoutX="21.0" layoutY="153.0" onKeyReleased="#enableButton" prefHeight="27.0" prefWidth="252.0" />
+      <Label layoutX="21.0" layoutY="138.0" text="New Value:" />
+      <Label layoutX="22.0" layoutY="188.0" text="Reason:" />
+      <Label layoutX="21.0" layoutY="20.0" prefHeight="21.0" prefWidth="102.0" style="-fx-font-weight: bold;" text="Edit Request">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="reasonField" disable="true" focusTraversable="false" layoutX="21.0" layoutY="205.0" onKeyReleased="#enableButton" prefHeight="60.0" prefWidth="252.0" />
+      <Label fx:id="collectorName" layoutX="22.0" layoutY="41.0" text="Collector Name:" />
+      <Label fx:id="requestDate" layoutX="22.0" layoutY="58.0" text="Date:" />
+      <Label fx:id="status" layoutX="22.0" layoutY="272.0" text="Status:" />
+      <Label fx:id="approvedBy" layoutX="22.0" layoutY="291.0" text="Approved By:" />
+      <Label fx:id="approvedDate" layoutX="22.0" layoutY="312.0" text="Approved Date:" />
+   </children>
+</AnchorPane>

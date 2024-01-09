@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox prefHeight="287.0" prefWidth="1060.0" styleClass="header-container" stylesheets="@../../../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.consumer.consumerProfile.pages.ConsumerBillHistoryController">
+   <children>
+      <VBox prefHeight="551.0" prefWidth="1080.0" style="-fx-background-color: white;" styleClass="header-container">
+         <children>
+            <TableView fx:id="billTable" prefHeight="531.0" prefWidth="1060.0">
+               <columns>
+                  <TableColumn fx:id="noCol" prefWidth="41.0" styleClass="nameCol" text="No" />
+                  <TableColumn fx:id="meterNoCol" prefWidth="71.0" styleClass="nameCol" text="Meter No" />
+                  <TableColumn fx:id="meterLoc" prefWidth="98.0" styleClass="nameCol" text="Meter Location" />
+                  <TableColumn fx:id="billingDateCol" prefWidth="112.0" text="Billing Date" />
+                  <TableColumn fx:id="dueDateCol" prefWidth="89.0" text="Due Date" />
+                  <TableColumn fx:id="consumptionCol" prefWidth="105.0" text="Consumption" />
+                  <TableColumn fx:id="rateCol" prefWidth="76.0" text="Rate" />
+                  <TableColumn fx:id="billAmountCol" prefWidth="111.0" styleClass="nameCol" text="Bill Amount" />
+                  <TableColumn fx:id="totalAmountCol" prefWidth="114.0" text="Total Amount" />
+                  <TableColumn fx:id="statusCol" prefWidth="94.0" text="Status" />
+                  <TableColumn fx:id="actionCol" prefWidth="127.0" text="Action" />
+               </columns>
+            </TableView>
+         </children>
+      </VBox>
+   </children>
+</HBox>

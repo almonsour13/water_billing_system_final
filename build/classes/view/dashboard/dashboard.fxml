@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1100.0" spacing="10.0" stylesheets="@../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.dashboard.DashboardController">
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+   <children>
+      <HBox prefHeight="35.0" prefWidth="200.0" styleClass="header-container" />
+      <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+         <children>
+            <VBox prefHeight="97.0" prefWidth="230.0" styleClass="header-container">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="202.0">
+                     <children>
+                        <Label prefHeight="25.0" prefWidth="100.0" style="-fx-font-weight: bold; -fx-font-family: Arial;" text="Total Income">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <HBox prefHeight="61.0" prefWidth="102.0" />
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding></VBox>
+            <VBox prefHeight="97.0" prefWidth="230.0" style="-fx-background-color: blue;" />
+            <VBox prefHeight="97.0" prefWidth="230.0" style="-fx-background-color: blue;" />
+            <VBox prefHeight="97.0" prefWidth="390.0" style="-fx-background-color: blue;" />
+         </children>
+      </HBox>
+      <HBox prefHeight="236.0" prefWidth="1080.0" spacing="10.0">
+         <children>
+            <VBox prefHeight="233.0" prefWidth="435.0" styleClass="header-container">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="407.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="86.0" text="Income" />
+                     </children>
+                  </HBox>
+                  <BarChart fx:id="incomeTrends" legendVisible="false">
+                     <xAxis>
+                        <CategoryAxis side="BOTTOM" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis prefHeight="172.0" prefWidth="11.0" side="LEFT" />
+                     </yAxis>
+                  </BarChart>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding></VBox>
+            <VBox prefHeight="234.0" prefWidth="361.0" styleClass="header-container">
+               <children>
+                  <HBox prefHeight="40.0" prefWidth="339.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="86.0" text="Bills" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="236.0" prefWidth="359.0">
+                     <children>
+                        <StackPane prefHeight="195.0" prefWidth="204.0" style="-fx-background-color: transparent;">
+                           <children>
+                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" />
+                              <PieChart fx:id="billsPieChart" labelsVisible="false" legendVisible="false" prefHeight="173.0" prefWidth="173.0" />
+                              <Circle fill="WHITE" radius="58.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                              <VBox alignment="CENTER" prefHeight="111.0" prefWidth="204.0">
+                                 <children>
+                                    <Label fx:id="totalBillsLabel" alignment="CENTER" prefHeight="33.0" prefWidth="103.0" text="132123" textAlignment="CENTER">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Label>
+                                    <Label alignment="CENTER" prefHeight="23.0" prefWidth="103.0" text="Total Bills" textAlignment="CENTER" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </StackPane>
+                        <VBox alignment="CENTER" prefHeight="197.0" prefWidth="134.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="134.0" spacing="5.0">
+                                 <children>
+                                    <Circle fill="#009e0d" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                    <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="70.0">
+                                       <children>
+                                          <Label text="Paid:" />
+                                       </children>
+                                    </HBox>
+                                    <Label fx:id="paidLabel" text="132" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="134.0" spacing="5.0">
+                                 <children>
+                                    <Circle fill="#ffa31f" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                    <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="70.0">
+                                       <children>
+                                          <Label text="Unpaid" />
+                                       </children>
+                                    </HBox>
+                                    <Label fx:id="unpaidLabel" text="132" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="134.0" spacing="5.0">
+                                 <children>
+                                    <Circle fill="#f21800" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                    <HBox alignment="CENTER_LEFT" prefHeight="34.0" prefWidth="70.0">
+                                       <children>
+                                          <Label text="Over Due:" />
+                                       </children>
+                                    </HBox>
+                                    <Label fx:id="overdueLabel" text="132" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding></VBox>
+            <VBox prefHeight="234.0" prefWidth="270.0" styleClass="header-container">
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="19.0" prefWidth="248.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="86.0" text="New Consumer" />
+                     </children>
+                  </HBox>
+                  <TableView prefHeight="200.0" prefWidth="200.0">
+                    <columns>
+                      <TableColumn prefWidth="165.0" styleClass="nameCol" text="Name" />
+                        <TableColumn prefWidth="81.0" text="Date Added" />
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children></VBox>
+         </children>
+      </HBox>
+      <HBox prefHeight="199.0" prefWidth="1083.0" spacing="10.0">
+         <children>
+            <VBox prefHeight="199.0" prefWidth="436.0" styleClass="header-container">
+               <children>
+                  <HBox prefHeight="30.0" prefWidth="436.0">
+                     <children>
+                        <Label text="Water Consumption Trends" />
+                     </children>
+                  </HBox>
+                  <LineChart fx:id="waterConsumerTrends" prefHeight="171.0" prefWidth="436.0">
+                    <xAxis>
+                      <CategoryAxis prefHeight="5.0" prefWidth="372.0" side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis prefHeight="124.0" prefWidth="13.0" side="LEFT" />
+                    </yAxis>
+                  </LineChart>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding></VBox>
+            <VBox prefHeight="197.0" prefWidth="215.0" style="-fx-background-color: red;" />
+            <VBox prefHeight="197.0" prefWidth="413.0" styleClass="header-container">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="64.0" prefWidth="412.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="86.0" text="Recent Bills" />
+                     </children>
+                  </HBox>
+                  <TableView prefHeight="200.0" prefWidth="200.0">
+                    <columns>
+                      <TableColumn prefWidth="139.0" resizable="false" styleClass="nameCol" text="Name" />
+                        <TableColumn prefWidth="89.0" resizable="false" text="Due Date" />
+                        <TableColumn prefWidth="92.0" resizable="false" text="Amount" />
+                        <TableColumn prefWidth="91.0" resizable="false" text="Status" />
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding></VBox>
+         </children>
+      </HBox>
+   </children>
+</VBox>

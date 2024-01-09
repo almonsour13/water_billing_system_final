@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="BOTTOM_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1100.0" spacing="10.0" stylesheets="@../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MeterReadingController">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="840.0" spacing="10.0">
+         <children>
+            <Label text="Search:" />
+            <TextField prefHeight="25.0" prefWidth="170.0" promptText="Search" />
+            <Label text="Month:" />
+            <ChoiceBox fx:id="monthChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+            <Label text="Year:" />
+            <ChoiceBox fx:id="yearChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+            <Label text="Status:" />
+            <ChoiceBox fx:id="statusChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+            <HBox alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="484.0">
+               <children>
+                  <Button fx:id="addMeterReading" mnemonicParsing="false" onAction="#addMeterReading" prefHeight="27.0" prefWidth="123.0" styleClass="dashboard-button" text="add meter reading" />
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+      <VBox prefHeight="508.0" prefWidth="1080.0" style="-fx-background-color: white;" styleClass="header-container">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="1057.0" styleClass="header-container">
+               <children>
+                  <Label text="Reading Date:">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+               <VBox.margin>
+                  <Insets left="10.0" />
+               </VBox.margin>
+            </HBox>
+            <TableView fx:id="meterReadingTable" prefHeight="437.0" prefWidth="974.0" stylesheets="@../../assets/dashboard.css">
+               <columns>
+                  <TableColumn fx:id="noCol" prefWidth="30.0" text="No" />
+                  <TableColumn fx:id="meterNoCol" prefWidth="103.0" text="Meter Number" />
+                  <TableColumn fx:id="meterLocationCol" prefWidth="92.0" text="Meter Location" />
+                  <TableColumn fx:id="nameCol" prefWidth="101.0" styleClass="nameCol" text="Name" />
+                  <TableColumn fx:id="prevReadingCol" prefWidth="115.0" text="Previous Reading" />
+                  <TableColumn fx:id="curReadingCol" prefWidth="125.0" text="Current Reading" />
+                  <TableColumn fx:id="dateAddedCol" prefWidth="100.0" text="Date Added" />
+                  <TableColumn fx:id="eneteredByCol" prefWidth="99.0" text="Entered By" />
+                  <TableColumn fx:id="statusCol" prefWidth="70.0" text="Status" />
+                  <TableColumn fx:id="requestCol" prefWidth="95.0" text="Request Edit" />
+                  <TableColumn fx:id="actionCol" prefWidth="136.0" text="Action" />
+               </columns>
+            </TableView>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+      <Button fx:id="saveAllBtn" mnemonicParsing="false" onAction="#saveAllCurrentReading" prefHeight="35.0" prefWidth="134.0" styleClass="dashboard-button" text="Save All" />
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</VBox>

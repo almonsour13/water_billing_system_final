@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="parentContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1100.0" spacing="10.0" stylesheets="@../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.consumer.ConsumerBillHistoryController">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="43.0" prefWidth="1080.0">
+         <children>
+            <Label fx:id="consumerName" prefHeight="17.0" prefWidth="404.0" text="Consumer Bills History">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="702.0" spacing="10.0">
+         <children>
+            <Label text="Search:" />
+            <TextField prefHeight="25.0" prefWidth="170.0" promptText="Search" />
+            <Label text="Month:" />
+            <ChoiceBox fx:id="monthChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+            <Label text="Year:" />
+            <ChoiceBox fx:id="yearChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+            <Label text="Status:" />
+            <ChoiceBox fx:id="statusChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+         </children>
+      </HBox>
+      <VBox prefHeight="485.0" prefWidth="1080.0" styleClass="header-container" stylesheets="@../../assets/dashboard.css">
+         <children>
+            <TableView fx:id="billTable" prefHeight="531.0" prefWidth="1060.0">
+               <columns>
+                  <TableColumn fx:id="noCol" prefWidth="41.0" styleClass="nameCol" text="No" />
+                  <TableColumn fx:id="meterNoCol" prefWidth="71.0" styleClass="nameCol" text="Meter No" />
+                  <TableColumn fx:id="meterLoc" prefWidth="120.0" styleClass="nameCol" text="Meter Location" />
+                  <TableColumn fx:id="billingDateCol" prefWidth="113.0" text="Billing Date" />
+                  <TableColumn fx:id="dueDateCol" prefWidth="100.0" text="Due Date" />
+                  <TableColumn fx:id="consumptionCol" prefWidth="106.0" text="Consumption" />
+                  <TableColumn fx:id="rateCol" prefWidth="81.0" text="Rate" />
+                  <TableColumn fx:id="totalAmountCol" prefWidth="124.0" text="Total Amount" />
+                  <TableColumn fx:id="statusCol" prefWidth="131.0" text="Status" />
+                  <TableColumn fx:id="actionCol" prefWidth="172.0" text="Action" />
+               </columns>
+            </TableView>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</VBox>

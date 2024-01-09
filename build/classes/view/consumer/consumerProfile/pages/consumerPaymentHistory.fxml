@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox prefHeight="287.0" prefWidth="1060.0" styleClass="header-container" stylesheets="@../../../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.consumer.consumerProfile.pages.ConsumerPaymentHistoryController">
+   <children>
+      <VBox prefHeight="551.0" prefWidth="1080.0" style="-fx-background-color: white;" styleClass="header-container">
+         <children>
+            <TableView fx:id="paymentTable" onMouseClicked="#selectInfo" prefHeight="564.0" prefWidth="1060.0">
+               <columns>
+                  <TableColumn fx:id="noCol" prefWidth="41.0" text="No" />
+                  <TableColumn fx:id="meterNumber" prefWidth="120.0" styleClass="nameCol" text="Meter Number" />
+                  <TableColumn fx:id="meterLocation" prefWidth="124.0" styleClass="nameCol" text="Meter Location" />
+                  <TableColumn fx:id="nameCol" prefWidth="141.0" styleClass="nameCol" text="Name" />
+                  <TableColumn fx:id="paymentDateCol" prefWidth="106.0" text="Payment Date" />
+                  <TableColumn fx:id="billAmountCol" prefWidth="112.0" styleClass="nameCol" text="Bill Amount" />
+                  <TableColumn fx:id="totalAmountCol" prefWidth="108.0" styleClass="nameCol" text="Total Amount" />
+                  <TableColumn fx:id="paymentAmountCol" prefWidth="118.0" styleClass="nameCol" text="Payment Amount" />
+                  <TableColumn fx:id="statusCol" prefWidth="107.0" text="Status" />
+                  <TableColumn fx:id="actionCol" prefWidth="82.0" text="Action" />
+               </columns>
+            </TableView>
+         </children>
+      </VBox>
+   </children>
+</HBox>
