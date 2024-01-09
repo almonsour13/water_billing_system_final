@@ -104,8 +104,8 @@ public class HomeWindowController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {      
         try {
-            loadPage("penalty");
-            updateButtonStyles(penaltyBtn);
+            loadPage("dashboard");
+            updateButtonStyles(dashboardBtn);
             setAccount();
         } catch (IOException ex) {
             Logger.getLogger(HomeWindowController.class.getName()).log(Level.SEVERE, null, ex);
