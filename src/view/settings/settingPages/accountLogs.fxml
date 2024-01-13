@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="571.0" prefWidth="848.0" style="-fx-background-color: white;" styleClass="header-container" stylesheets="@../../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.settings.settingPages.AccountLogsController">
@@ -10,6 +14,16 @@
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
    <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="1084.0" style="-fx-spacing: 10;">
+         <children>
+            <Label text="Search:" />
+            <TextField fx:id="searchValue" onKeyTyped="#searchConsumer" prefHeight="27.0" prefWidth="170.0" promptText="Search" />
+            <Label text="Month:" />
+            <ChoiceBox fx:id="monthChoices" prefHeight="25.0" prefWidth="81.0" />
+            <Label text="Year:" />
+            <ChoiceBox fx:id="yearChoices" prefHeight="25.0" prefWidth="81.0" />
+         </children>
+      </HBox>
       <TableView fx:id="logTable" prefHeight="548.0" prefWidth="828.0">
         <columns>
           <TableColumn fx:id="name" prefWidth="146.0" styleClass="nameCol" text="Name " />

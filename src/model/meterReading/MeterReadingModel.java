@@ -64,31 +64,7 @@ public class MeterReadingModel {
     }
     public ObservableList<MeterReading> getMeterReading() throws SQLException{
         ObservableList<MeterReading> MeterReading = FXCollections.observableArrayList();
-        String query =  "SELECT\n" +
-                            "	cm.consumerMeterNumberID,\n" +
-                            "	mr.meterReadingID,\n" +
-                            "    m.meterNumber,\n" +
-                            "    cm.meterLocation,\n" +
-                            "    CONCAT(c.cFName,' ',c.cLName) AS name,\n" +
-                            "    mr.readingDate,\n" +
-                            "    mr.previousReading,\n" +
-                            "    mr.currentReading,\n" +
-                            "    mr.meterReadingStatus,\n" +
-                            "    COALESCE(cd.date, NULL) AS date,\n" +
-                            "    COALESCE(CONCAT(a.aFName,' ',a.aLName), '') AS collectorName,\n" +
-                            "    a.aID\n" +
-                            "FROM\n" +
-                            "    conscessionaries c\n" +
-                            "JOIN\n" +
-                            "    consumermeternumber cm ON c.cID = cm.cID\n" +
-                            "JOIN\n" +
-                            "    meter m ON cm.meterID = m.meterID\n" +
-                            "JOIN\n" +
-                            "    meterreading mr ON cm.consumerMeterNumberID = mr.consumerMeterNumberID\n" +
-                            "LEFT JOIN\n" +
-                            "	curreadingdateadded cd ON mr.meterReadingID = cd.meterReadingID\n" +
-                            "LEFT JOIN\n" +
-                            "    accounts a ON cd.aID = a.aID ORDER BY c.cFName;";
+        String query =  "SELECT * FROM get_meterReading;";
 
         try (Connection connection = dbConfig.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -106,6 +82,7 @@ public class MeterReadingModel {
                 }
                 MeterReading.add(new MeterReading(
                         no,
+                        rs.getInt("cID"),
                         rs.getInt("consumerMeterNumberID"),
                         rs.getInt("meterReadingID"),
                         rs.getString("meterNumber"),
@@ -115,46 +92,70 @@ public class MeterReadingModel {
                         rs.getInt("previousReading"),
                         rs.getInt("currentReading"),
                         date,
-                       name
+                       name,
+                        rs.getInt("meterReadingStatus")==1?"":"Edited"
                 ));
                 no++;
             }
         }
         return MeterReading;
     } 
-    public ObservableList<MeterReading> filterMeterReading(int month, int year) throws SQLException {
-        ObservableList<MeterReading> meterReadings = FXCollections.observableArrayList();
-           String query =   "SELECT\n" +
-                            "	cm.consumerMeterNumberID,\n" +
-                            "	mr.meterReadingID,\n" +
-                            "    m.meterNumber,\n" +
-                            "    cm.meterLocation,\n" +
-                            "    CONCAT(c.cFName,' ',c.cLName) AS name,\n" +
-                            "    mr.readingDate,\n" +
-                            "    mr.previousReading,\n" +
-                            "    mr.currentReading,\n" +
-                            "    mr.meterReadingStatus,\n" +
-                            "    COALESCE(cd.date, NULL) AS date,\n" +
-                            "    COALESCE(CONCAT(a.aFName,' ',a.aLName), '') AS collectorName,\n" +
-                            "    a.aID\n" +
-                            "FROM\n" +
-                            "    conscessionaries c\n" +
-                            "JOIN\n" +
-                            "    consumermeternumber cm ON c.cID = cm.cID\n" +
-                            "JOIN\n" +
-                            "    meter m ON cm.meterID = m.meterID\n" +
-                            "JOIN\n" +
-                            "    meterreading mr ON cm.consumerMeterNumberID = mr.consumerMeterNumberID\n" +
-                            "LEFT JOIN\n" +
-                            "	curreadingdateadded cd ON mr.meterReadingID = cd.meterReadingID\n" +
-                            "LEFT JOIN\n" +
-                            "    accounts a ON cd.aID = a.aID WHERE MONTH(readingDate) = ? AND YEAR(readingDate) = ? ORDER BY c.cFName;";
-
+    public ObservableList<MeterReading> getMeterReadingByID() throws SQLException{
+        ObservableList<MeterReading> MeterReading = FXCollections.observableArrayList();
+        String query =  "SELECT * FROM get_meterReading;";
 
         try (Connection connection = dbConfig.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, month);
-            statement.setInt(2, year);
+            //statement.setInt(1, id);
+
+            ResultSet rs = statement.executeQuery();
+            int no = 1;
+            while (rs.next()) {
+                String date = rs.getDate("date") != null ? String.valueOf(rs.getDate("date").toLocalDate()) : "";
+                String name = "";
+                if(logAccount.getAccount() == rs.getInt("aID")){
+                    name = "You";
+                }else{
+                    name = rs.getString("collectorName");
+                }
+                MeterReading.add(new MeterReading(
+                        no,
+                        rs.getInt("cID"),
+                        rs.getInt("consumerMeterNumberID"),
+                        rs.getInt("meterReadingID"),
+                        rs.getString("meterNumber"),
+                        rs.getString("meterLocation"),
+                        rs.getString("name"),
+                        rs.getDate("readingDate").toLocalDate(),
+                        rs.getInt("previousReading"),
+                        rs.getInt("currentReading"),
+                        date,
+                       name,
+                        rs.getInt("meterReadingStatus")==1?"":"Edited"
+                ));
+                no++;
+            }
+        }
+        return MeterReading;
+    } 
+    public ObservableList<MeterReading> filterMeterReading(int month, int year, String searchVal) throws SQLException {
+        ObservableList<MeterReading> meterReadings = FXCollections.observableArrayList();
+        String query = "SELECT * FROM get_meterReading " +
+            (month != 0 || year != 0 ||  (searchVal != null && !searchVal.isEmpty()) ? "WHERE " : "") +
+            (month != 0 ? "MONTH(readingDate) = ? " : "") +
+            (year != 0 ? (month != 0 ? "AND " : "") + "YEAR(readingDate) = ? " : "") +
+            (searchVal != null && !searchVal.isEmpty() ? (month != 0 || year != 0 ? "AND " : "") +
+                    "UPPER(name) LIKE ? " : "") +
+            "ORDER BY name;";
+        try (Connection connection = dbConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)) {
+            int parameterIndex = 1;
+            if (month != 0) statement.setInt(parameterIndex++, month);
+            if (year != 0) statement.setInt(parameterIndex++, year);
+            if (searchVal != null && !searchVal.isEmpty()) {
+                String likePattern = "%" + searchVal + "%";
+                statement.setString(parameterIndex++, likePattern);
+            }
 
             ResultSet rs = statement.executeQuery();
             int no = 1;
@@ -168,6 +169,7 @@ public class MeterReadingModel {
                 }
                 meterReadings.add(new MeterReading(
                         no,
+                        rs.getInt("cID"),
                         rs.getInt("consumerMeterNumberID"),
                         rs.getInt("meterReadingID"),
                         rs.getString("meterNumber"),
@@ -177,34 +179,126 @@ public class MeterReadingModel {
                         rs.getInt("previousReading"),
                         rs.getInt("currentReading"),
                         date,
-                       name
+                       name,
+                        rs.getInt("meterReadingStatus")==1?"":"Edited"
                 ));
                 no++;
             }
         }
         return meterReadings;
+    }   
+    public ObservableList<MeterReading> getEditReadingHistory() throws SQLException{
+        ObservableList<MeterReading> MeterReading = FXCollections.observableArrayList();
+        String query =  "SELECT\n" +
+                        "    mr.meterReadingID,\n" +
+                        "    er.editReadingID,\n" +
+                        "    a.aID,\n" +
+                        "    m.meterNumber,\n" +
+                        "    cm.meterLocation,\n" +
+                        "    CONCAT(c.cFName, ' ', c.cLName) AS name,\n" +
+                        "    mr.readingDate,\n" +
+                        "    mr.previousReading,\n" +
+                        "    er.orignalValue,\n" +
+                        "    er.newValue,\n" +
+                        "    er.reason,\n" +
+                        "    er.editReadingDate,\n" +
+                        "    CONCAT(a.aFName, ' ', a.aLName) AS accountName\n" +
+                        "FROM\n" +
+                        "	conscessionaries c \n" +
+                        "JOIN\n" +
+                        "	consumermeternumber cm ON c.cID = cm.cID\n" +
+                        "JOIN\n" +
+                        "	meter m ON cm.meterID = m.meterID\n" +
+                        "JOIN\n" +
+                        "	meterreading mr ON cm.consumerMeterNumberID = mr.consumerMeterNumberID\n" +
+                        "JOIN\n" +
+                        "	editreading er ON mr.meterReadingID = er.meterReadingID\n" +
+                        "JOIN\n" +
+                        "	accounts a ON er.aID = a.aID;";
+
+        try (Connection connection = dbConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            //statement.setInt(1, id);
+
+            ResultSet rs = statement.executeQuery();
+            int no = 1;
+            while (rs.next()) {
+                String name = "";
+                if(logAccount.getAccount() == rs.getInt("aID")){
+                    name = "You";
+                }else{
+                    name = rs.getString("collectorName");
+                }
+                MeterReading.add(new MeterReading(
+                        no,
+                        rs.getInt("meterReadingID"),
+                        rs.getInt("editReadingID"),
+                        rs.getString("meterNumber"),
+                        rs.getString("meterLocation"),
+                        rs.getString("name"),
+                        rs.getDate("readingDate").toLocalDate(),
+                        rs.getInt("previousReading"),
+                        rs.getInt("orignalValue"),
+                        rs.getInt("newValue"),
+                        rs.getDate("editReadingDate").toLocalDate(),
+                        rs.getString("reason"),
+                        rs.getString("accountName")
+                ));
+                no++;
+            }
+        }
+        return MeterReading;
     } 
+    
+    public boolean checkCurrentReading(int meterID, int meterReadingID) throws SQLException{
+        try (Connection connection = dbConfig.getConnection()) {
+            connection.setAutoCommit(false);
+
+            // Check if the bill already exists
+            try (PreparedStatement checkBillStatement = connection.prepareStatement("SELECT currentReading FROM meterreading WHERE consumerMeterNumberID = ? AND meterReadingID = ?")) {
+                checkBillStatement.setInt(1, meterID);
+                checkBillStatement.setInt(2, meterReadingID);
+               // checkBillStatement.setDate(3, java.sql.Date.valueOf(billDate));
+
+                ResultSet checkBillResults = checkBillStatement.executeQuery();
+
+                if (checkBillResults.next()) {
+                    if(checkBillResults.getInt("currentReading")!=0){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }else{
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }            
+    }
     public void addNewMeterReading() throws SQLException {
         String insertMeterReading = 
                 "INSERT INTO meterreading (consumerMeterNumberID, readingDate, previousReading, currentReading, meterReadingStatus)\n" +
-"SELECT\n" +
-"    cm.consumerMeterNumberID,\n" +
-"    CURRENT_TIMESTAMP AS readingDate,\n" +
-"    COALESCE(MAX(mr.currentReading), 0) AS previousReading,\n" +
-"    0 AS currentReading,\n" +
-"    1 AS meterReadingStatus\n" +
-"FROM\n" +
-"    conscessionaries c\n" +
-"JOIN\n" +
-"    consumermeternumber cm ON c.cID = cm.cID\n" +
-"JOIN\n" +
-"    meter m ON cm.meterID = m.meterID\n" +
-"LEFT JOIN\n" +
-"    meterreading mr ON cm.consumerMeterNumberID = mr.consumerMeterNumberID\n" +
-"WHERE\n" +
-"    c.cStatus = 1 AND cm.cMStatus = 1 AND m.meterStatus = 1\n" +
-"GROUP BY\n" +
-"    consumerMeterNumberID;";
+                "SELECT\n" +
+                "    cm.consumerMeterNumberID,\n" +
+                "    CURRENT_TIMESTAMP AS readingDate,\n" +
+                "    COALESCE(MAX(mr.currentReading), 0) AS previousReading,\n" +
+                "    0 AS currentReading,\n" +
+                "    1 AS meterReadingStatus\n" +
+                "FROM\n" +
+                "    consumermeternumber cm\n" +
+                "JOIN\n" +
+                "    meter m ON cm.meterID = m.meterID\n" +
+                "JOIN\n" +
+                "    meterconnectionhistory mch ON cm.consumerMeterNumberID = mch.cmID\n" +
+                "LEFT JOIN\n" +
+                "    meterreading mr ON cm.consumerMeterNumberID = mr.consumerMeterNumberID\n" +
+                "WHERE\n" +
+                "    mch.mchStatus = 1 AND m.meterStatus = 1 AND \n" +
+                "    mch.mchID = (SELECT MAX(mchID) FROM meterconnectionhistory WHERE cmID = cm.consumerMeterNumberID)\n" +
+                "GROUP BY\n" +
+                "    consumerMeterNumberID;";
 
         try (Connection connection = dbConfig.getConnection();
             PreparedStatement statement = connection.prepareStatement(insertMeterReading)) {
@@ -321,25 +415,10 @@ public class MeterReadingModel {
         }       
         return rate;
     }
-    public void addBillToConsumer(int meterID, int meterReadingID, LocalDate billDate, LocalDate dueDate,
+    public void addBillToConsumer(int meterID,int cID, int meterReadingID, LocalDate billDate, LocalDate dueDate,
                              int consumption, int rate, double billAmount) throws SQLException {
     try (Connection connection = dbConfig.getConnection()) {
         connection.setAutoCommit(false);
-
-        String query = "SELECT c.cID FROM conscessionaries c " +
-                       "JOIN consumermeternumber cm ON c.cID = cm.cID " +
-                       "JOIN meter m ON cm.meterID = m.meterID " +
-                       "WHERE cm.cMStatus = 1 AND cm.consumerMeterNumberID = ?;";
-        int cID = 0;
-        try (PreparedStatement checkBillStatement = connection.prepareStatement(query)) {
-            checkBillStatement.setInt(1, meterID);
-            ResultSet rs = checkBillStatement.executeQuery();
-
-            if (rs.next()) {
-                cID = rs.getInt("cID");
-            }
-        }
-
         // Insert into bills table
         String billSQL = "INSERT INTO bills (cID, meterReadingID, billingDate, dueDate, waterConsumption, rate, totalAmount, billingStatus) " +
                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -351,7 +430,7 @@ public class MeterReadingModel {
             billStatement.setDate(parameterIndex++, java.sql.Date.valueOf(dueDate));
             billStatement.setInt(parameterIndex++, consumption);
             billStatement.setInt(parameterIndex++, rate);
-            billStatement.setDouble(parameterIndex++, billAmount);
+            billStatement.setDouble(parameterIndex++, billAmount*0.0040);
             billStatement.setInt(parameterIndex++, 1);
             billStatement.executeUpdate();
         }
@@ -362,57 +441,6 @@ public class MeterReadingModel {
         throw e;
     }
 }
-
-    public boolean checkBillExist(int meterID, int meterReadingID) throws SQLException{
-        try (Connection connection = dbConfig.getConnection()) {
-            connection.setAutoCommit(false);
-
-           
-            try (PreparedStatement checkBillStatement = connection.prepareStatement("SELECT * FROM bills WHERE meterID = ? AND meterReadingID = ?")) {
-                checkBillStatement.setInt(1, meterID);
-                checkBillStatement.setInt(2, meterReadingID);
-               // checkBillStatement.setDate(3, java.sql.Date.valueOf(billDate));
-
-                ResultSet checkBillResults = checkBillStatement.executeQuery();
-
-                if (checkBillResults.next()) {
-                    return true;
-                }else{
-                    return false;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        }            
-    }
-    public boolean checkCurrentReading(int meterID, int meterReadingID) throws SQLException{
-        try (Connection connection = dbConfig.getConnection()) {
-            connection.setAutoCommit(false);
-
-            // Check if the bill already exists
-            try (PreparedStatement checkBillStatement = connection.prepareStatement("SELECT currentReading FROM meterreading WHERE consumerMeterNumberID = ? AND meterReadingID = ?")) {
-                checkBillStatement.setInt(1, meterID);
-                checkBillStatement.setInt(2, meterReadingID);
-               // checkBillStatement.setDate(3, java.sql.Date.valueOf(billDate));
-
-                ResultSet checkBillResults = checkBillStatement.executeQuery();
-
-                if (checkBillResults.next()) {
-                    if(checkBillResults.getInt("currentReading")!=0){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }else{
-                    return false;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        }            
-    }
     public boolean checkCurrentReadingMonth() throws SQLException {
     try (Connection connection = dbConfig.getConnection()) {
         connection.setAutoCommit(false);
@@ -448,38 +476,19 @@ public class MeterReadingModel {
         throw e;
     }
 }
-    public int getMeterReading(int meterReadingID) throws SQLException{
-        try (Connection connection = dbConfig.getConnection()) {
-            connection.setAutoCommit(false);
-
-            // Check if the bill already exists
-            try (PreparedStatement checkBillStatement = connection.prepareStatement("SELECT currentReading FROM meterreading WHERE meterReadingID = ?")) {
-                checkBillStatement.setInt(1, meterReadingID);
-               // checkBillStatement.setDate(3, java.sql.Date.valueOf(billDate));
-
-                ResultSet checkBillResults = checkBillStatement.executeQuery();
-
-                if (checkBillResults.next()) {
-                    if(checkBillResults.getInt("currentReading")!=0){
-                        return checkBillResults.getInt("currentReading");
-                    }else{
-                        return 0;
-                    }
-                }else{
-                    return 0;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        }    
-    }
-    public void insertNewValue(int meterReadingID, int logAccount, int orginalValue, int newValue, String reason) {
-        String insertCurrentReadingDateQuery = "INSERT INTO editrequest(meterReadingID, aID, editRequestDate, orignalValue, newValue, reason, editRequestStatus) "
+    public void insertNewValue(int meterReadingID, int logAccount,int prevValue, int orginalValue, int newValue, String reason) {
+        String insertCurrentReadingDateQuery = "INSERT INTO editReading(meterReadingID, aID, editReadingDate, orignalValue, newValue, reason, editReadingStatus) "
                 + "VALUES (?, ?, CURRENT_DATE, ?, ?, ?, 1)";
 
+        
         try (Connection connection = dbConfig.getConnection();
-            PreparedStatement insertStatement = connection.prepareStatement(insertCurrentReadingDateQuery)) {
+            PreparedStatement insertStatement = connection.prepareStatement(insertCurrentReadingDateQuery))
+             {
+            
+
+            connection.setAutoCommit(false);  // Disable auto-commit for transaction
+
+            // Insert new value into editReading table
             insertStatement.setInt(1, meterReadingID);
             insertStatement.setInt(2, logAccount);
             insertStatement.setInt(3, orginalValue);
@@ -487,68 +496,54 @@ public class MeterReadingModel {
             insertStatement.setString(5, reason);
 
             int insertAffectedRows = insertStatement.executeUpdate();
-             if (insertAffectedRows > 0) {
-                System.out.println("request sent successfully.");
+
+            if (insertAffectedRows > 0) {
+                String updateReadingValueQuery = "UPDATE meterReading SET currentReading = ?, meterReadingStatus = 2 WHERE meterReadingID = ?";
+
+                try (PreparedStatement updateStatement = connection.prepareStatement(updateReadingValueQuery)){
+                    updateStatement.setInt(1, newValue);
+                    updateStatement.setInt(2, meterReadingID);
+
+                    int updateStatementAffected = updateStatement.executeUpdate();
+
+                    if (updateStatementAffected > 0) {
+                        System.out.println("Request sent successfully. Current Reading updated successfully for meterReadingID: " + meterReadingID);
+                        String updateBillQuery = "UPDATE bills SET totalAmount = ?, waterConsumption = ? WHERE meterReadingID = ?;";
+
+                        try (PreparedStatement updateBills = connection.prepareStatement(updateBillQuery)){
+                            int waterConsumption = newValue - prevValue;
+                            int totalAmount =  waterConsumption*getRate();
+                            Double parseAmount = totalAmount*0.004;
+                            updateBills.setDouble(1, parseAmount);
+                            updateBills.setInt(2, waterConsumption);
+                            updateBills.setInt(3, meterReadingID);
+
+                            int billsRowAffected = updateBills.executeUpdate();
+
+                            if (billsRowAffected > 0) {
+                                System.out.println("Request sent successfully. Current Reading updated successfully for meterReadingID: " + meterReadingID);
+
+                                connection.commit();  // Commit the transaction if everything is successful
+                            } else {
+                                System.out.println("Failed to update current reading.");
+                                connection.rollback();  // Rollback the transaction if updating current reading fails
+                            }
+                        }
+                        connection.commit();  // Commit the transaction if everything is successful
+                    } else {
+                        System.out.println("Failed to update current reading.");
+                        connection.rollback();  // Rollback the transaction if updating current reading fails
+                    }
+                }
             } else {
-                System.out.println("Failed to update current reading.");
+                System.out.println("Failed to insert");
+                connection.rollback();  // Rollback the transaction if inserting into editReading fails
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
             // Handle the exception appropriately, e.g., log the error
         }
-    }
-    public MeterReading viewRequest(int meterReadingID) throws SQLException{
-        MeterReading request = null;
-        try (Connection connection = dbConfig.getConnection()) {
-            connection.setAutoCommit(false);
-            String query =  "SELECT\n" +
-                            "	 ed.editRequestID,\n" +
-                            "    ed.meterReadingID,\n" +
-                            "    CONCAT(a.aFName,' ',a.aLName) AS name,\n" +
-                            "    ed.editRequestDate,\n" +
-                            "    ed.orignalValue,\n" +
-                            "    ed.newValue,\n" +
-                            "    ed.reason,\n" +
-                            "    ed.editRequestStatus as status\n" +
-                            "FROM\n" +
-                            "	accounts a \n" +
-                            "JOIN\n" +
-                            "	editrequest ed ON a.aID = ed.aID\n" +
-                            "WHERE\n" +
-                            "	ed.meterReadingID = ?";
-            // Check if the bill already exists
-            try (PreparedStatement checkBillStatement = connection.prepareStatement(query)) {
-                checkBillStatement.setInt(1, meterReadingID);
-                ResultSet rs = checkBillStatement.executeQuery();
-
-                if (rs.next()) {
-                    String status = "";
-                    int stat = rs.getInt("status");
-                    if(stat == 1){
-                        status = "Pending";
-                    }else if(stat == 2){
-                        status = "Approved";
-                    }else if(stat == 3){
-                        status = "Rejected";
-                    }
-                    request = new MeterReading(
-                        rs.getInt("editRequestID"),
-                        rs.getInt("meterReadingID"),
-                        rs.getString("name"),
-                        rs.getDate("editRequestDate").toLocalDate(),
-                        rs.getInt("orignalValue"),
-                        rs.getInt("newValue"),
-                        rs.getString("reason"),
-                                status
-                    );
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        }         
-        return request;
     }
     public boolean checkInvoice(int meterReadingID) throws SQLException{
         try (Connection connection = dbConfig.getConnection()) {
@@ -583,73 +578,35 @@ public class MeterReadingModel {
             throw e;
         }        
     }
-    public void approvedRequest(int meterReadingID) {
-        String query = "UPDATE meterreading\n" +
-                       "SET currentReading = (\n" +
-                       "    SELECT newValue\n" +
-                       "    FROM editrequest\n" +
-                       "    WHERE meterReadingID = ?\n" +
-                       ")\n" +
-                       "WHERE meterReadingID = ?;";
+    public boolean checkBillingStatusByMrID(int meterReadingID) throws SQLException{
+        try (Connection connection = dbConfig.getConnection()) {
+            connection.setAutoCommit(false);
+                String query =  "SELECT \n" +
+                                "	billingStatus \n" +
+                                "FROM \n" +
+                                "	meterreading mr \n" +
+                                "JOIN\n" +
+                                "	bills b ON mr.meterReadingID = b.meterReadingID\n" +
+                                "WHERE\n" +
+                                "	mr.meterReadingID = ?;";
+                
+            // Check if the bill already exists
+            try (PreparedStatement checkBillStatement = connection.prepareStatement(query)) {
+                checkBillStatement.setInt(1, meterReadingID);
 
-        String update = "UPDATE editrequest\n" +
-                        "SET editRequestStatus = ?\n" +
-                        "WHERE meterReadingID = ?;";
+                ResultSet rs = checkBillStatement.executeQuery();
 
-        try (Connection connection = dbConfig.getConnection();
-             PreparedStatement updateStatement = connection.prepareStatement(query);
-             PreparedStatement updateStatement2 = connection.prepareStatement(update)) {
-
-            updateStatement.setInt(1, meterReadingID);
-            updateStatement.setInt(2, meterReadingID);
-
-            int rowsAffected = updateStatement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Current Reading updated successfully for meterReadingID: " + meterReadingID);
-            } else {
-                System.out.println("No rows affected. Current Reading not updated for meterReadingID: " + meterReadingID);
+                if (rs.next()) {
+                    if(rs.getInt("billingStatus")==2){
+                        return true;
+                    }
+                }
             }
-
-            // Assuming you want to update the editRequestStatus as well
-            updateStatement2.setInt(1, 2);  // Assuming 1 is the status for approval
-            updateStatement2.setInt(2, meterReadingID);
-
-            int rowsAffected2 = updateStatement2.executeUpdate();
-
-            if (rowsAffected2 > 0) {
-                System.out.println("Edit Request Status updated successfully for meterReadingID: " + meterReadingID);
-            } else {
-                System.out.println("No rows affected. Edit Request Status not updated for meterReadingID: " + meterReadingID);
-            }
-
         } catch (SQLException e) {
-            System.err.println("Error updating current reading for meterReadingID: " + meterReadingID);
             e.printStackTrace();
-            // Handle the exception appropriately, e.g., log the error
+            throw e;
         }
+        return false;
     }
-    public void rejectRequest(int meterReadingID){
-        String update = "UPDATE editrequest\n" +
-                        "SET editRequestStatus = ?\n" +
-                        "WHERE meterReadingID = ?;";
-        try (Connection connection = dbConfig.getConnection();
-            PreparedStatement updateStatement = connection.prepareStatement(update)){
-            updateStatement.setInt(1, 3);
-            updateStatement.setInt(2, meterReadingID);
-
-            int rowsAffected2 = updateStatement.executeUpdate();
-
-            if (rowsAffected2 > 0) {
-                System.out.println("Reject Request  successfully for meterReadingID: " + meterReadingID);
-            } else {
-                System.out.println("No rows affected. Reject Request  not updated for meterReadingID: " + meterReadingID);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error updating current reading for meterReadingID: " + meterReadingID);
-            e.printStackTrace();
-            // Handle the exception appropriately, e.g., log the error
-        }
-    }
+    
 }

@@ -197,16 +197,10 @@ public class AddMeterNoController implements Initializable {
             modal("Meter number is already exist and active. Cannot add.");
             return;
         }else if(meterChecker == 2){
-            conModal("Meter number is already exist but its inactive and owner is active.");
+            conModal("Meter number is already exist but its disconnected");
             return;
         }else if(meterChecker == 3){
-            conModal("Meter number is already exist but its inactive and the user also inactive.");
-            return;
-        }else if(meterChecker == 4){
             modal("Meter number is exist but its inactive or broken. Cannot Add.");
-            return;
-        }else if(meterChecker == 5){
-            conModal("Meter number is exist and active but disconnected.");
             return;
         }else{
             consumerModel.insertMeterNo(cID,setMeterNumber.getText(),setMeterLcation.getText(),setInstallationDate.getValue());

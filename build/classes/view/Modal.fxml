@@ -6,7 +6,7 @@
 
 <VBox fx:id="container" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="172.0" prefWidth="311.0" spacing="10.0" style="-fx-background-color: white;" stylesheets="@../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.consumer.ModalController">
    <children>
-      <Label fx:id="promptLabel" prefHeight="66.0" prefWidth="311.0" text="ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssdddddddddddddddddddddddddddd" textAlignment="CENTER" textOverrun="CENTER_ELLIPSIS" wrapText="true" />
+      <Label fx:id="promptLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="66.0" prefWidth="311.0" text="ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssdddddddddddddddddddddddddddd" textAlignment="CENTER" textOverrun="LEADING_WORD_ELLIPSIS" wrapText="true" />
       <Button fx:id="okBtn" mnemonicParsing="false" onAction="#ok" prefHeight="25.0" prefWidth="54.0" styleClass="cancel-btn" text="Ok" />
    </children>
 </VBox>

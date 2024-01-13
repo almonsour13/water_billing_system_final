@@ -14,12 +14,14 @@
       <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="702.0" spacing="10.0">
          <children>
             <Label text="Search:" />
-            <TextField prefHeight="25.0" prefWidth="170.0" promptText="Search" />
+            <TextField fx:id="searchVal" onKeyTyped="#search" prefHeight="25.0" prefWidth="170.0" promptText="Search" />
             <Label text="Month:" />
             <ChoiceBox fx:id="monthChoiceBox" prefHeight="25.0" prefWidth="70.0" />
             <Label text="Year:" />
             <ChoiceBox fx:id="yearChoiceBox" prefHeight="25.0" prefWidth="70.0" />
-            <Label text="Status:" />
+            <Label text="Connection Status:" />
+            <ChoiceBox fx:id="connectionStatusChoiceBox" prefHeight="25.0" prefWidth="132.0" />
+            <Label text="Meter Status:" />
             <ChoiceBox fx:id="statusChoiceBox" prefHeight="25.0" prefWidth="70.0" />
             <Label text="Meter Location" />
             <ChoiceBox fx:id="meterLocChoiceBox" prefHeight="25.0" prefWidth="70.0" />
@@ -32,10 +34,11 @@
                   <TableColumn fx:id="noCol" prefWidth="42.0" styleClass="nameCol" text="No" />
                   <TableColumn fx:id="meterNumberCol" prefWidth="117.0" styleClass="nameCol" text="Meter Number" />
                   <TableColumn fx:id="meterLocationCol" prefWidth="135.0" styleClass="nameCol" text="Meter Location" />
-                  <TableColumn fx:id="installationDateCol" prefWidth="174.0" styleClass="nameCol" text="Installation Date" />
-                  <TableColumn fx:id="nameCol" prefWidth="174.0" styleClass="nameCol" text="Current Owner" />
-                  <TableColumn fx:id="statusCol" prefWidth="193.0" text="Meter Status" />
-                  <TableColumn fx:id="actionCol" prefWidth="223.0" text="Action" />
+                  <TableColumn fx:id="installationDateCol" prefWidth="135.0" styleClass="nameCol" text="Installation Date" />
+                  <TableColumn fx:id="nameCol" prefWidth="168.0" styleClass="nameCol" text="Current Owner" />
+                  <TableColumn fx:id="connectionStatusCol" prefWidth="141.0" text="Connection Status" />
+                  <TableColumn fx:id="statusCol" prefWidth="155.0" text="Meter Status" />
+                  <TableColumn fx:id="actionCol" prefWidth="166.0" text="Action" />
                </columns>
             </TableView>
          </children>

@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * @author Merry Ann
  */
 public class DbConfig {
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/water_billing_system_1";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/water_billing_system_2";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
     

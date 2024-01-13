@@ -26,7 +26,7 @@
             <ChoiceBox fx:id="yearChoices" prefHeight="25.0" prefWidth="81.0" />
             <HBox alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="285.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#addConsumer" prefHeight="27.0" prefWidth="119.0" styleClass="dashboard-button" text="+ Add Consumer" />
+                  <Button fx:id="addConsumerBtn" mnemonicParsing="false" onAction="#addConsumer" prefHeight="27.0" prefWidth="60.0" styleClass="dashboard-button" />
                </children>
             </HBox>
          </children>
@@ -39,8 +39,8 @@
                   <TableColumn fx:id="firstNameColumn" editable="false" prefWidth="118.0" resizable="false" styleClass="nameCol" text="First Name" />
                   <TableColumn fx:id="middleNameColumn" editable="false" prefWidth="111.0" resizable="false" styleClass="nameCol" text="Middle Name" />
                   <TableColumn fx:id="lastNameColumn" editable="false" prefWidth="118.0" resizable="false" styleClass="nameCol" text="Last Name" />
-                  <TableColumn fx:id="contactNoColumn" editable="false" prefWidth="84.0" resizable="false" text="Contact No." />
-                  <TableColumn fx:id="purokColumn" editable="false" minWidth="0.0" prefWidth="85.0" resizable="false" text="Purok" />
+                  <TableColumn fx:id="contactNoColumn" editable="false" prefWidth="84.0" resizable="false" styleClass="nameCol" text="Contact No." />
+                  <TableColumn fx:id="purokColumn" editable="false" minWidth="0.0" prefWidth="85.0" resizable="false" styleClass="nameCol" text="Purok" />
                   <TableColumn fx:id="postalCodeColumn" editable="false" prefWidth="108.0" resizable="false" text="Postal Code" />
                   <TableColumn fx:id="dateAddedCol" editable="false" prefWidth="81.0" resizable="false" text="Date Added" />
                   <TableColumn fx:id="statusColumn" editable="false" prefWidth="77.0" resizable="false" text="Status" />

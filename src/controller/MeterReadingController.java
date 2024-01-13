@@ -48,8 +48,6 @@ import model.meterReading.MeterReading;
 import model.meterReading.MeterReadingModel;
 import view.consumer.ModalController;
 import view.meterReading.EditReadingController;
-import view.meterReading.ViewEditRequestController;
-import view.meterReading.ViewEditRequestStatusController;
 import view.settings.settingPages.SystemLogsModel;
 
 /**
@@ -62,6 +60,10 @@ public class MeterReadingController implements Initializable {
     
     private  LoggedAccountSetter logAccount = new LoggedAccountSetter();
     private SystemLogsModel systemLogsModel = new SystemLogsModel();
+    ObservableList<String> months = 
+                FXCollections.observableArrayList(
+                        "Jan","Feb","Mar","Apr","May","Jun",
+                        "Jul","Aug","Sep","Oct","Nov","Dec");
     
     ObservableList<MeterReading> data = FXCollections.observableArrayList();
     private MeterReadingModel meterReadingModel; 
@@ -102,6 +104,8 @@ public class MeterReadingController implements Initializable {
     private TableColumn<MeterReading, Integer> actionCol;
     private static BorderPane mainPanel = new BorderPane();
     private static Pane pageSetter = new Pane();
+    @FXML
+    private TextField searchVal;
     /**
      * Initializes the controller class.
      */
@@ -110,7 +114,6 @@ public class MeterReadingController implements Initializable {
     }
     public void mainPanel(BorderPane mainPanel){
         this.mainPanel = mainPanel;
-        System.out.println(mainPanel);
     }
     public void pageSetter(Pane pageSetter){
         this.pageSetter = pageSetter;
@@ -119,11 +122,7 @@ public class MeterReadingController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         try {       
             setChoices();
-        } catch (SQLException ex) {
-            Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {               
-               loadMeterReading();
+            loadMeterReading();
         } catch (SQLException ex) {
             Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -169,7 +168,6 @@ public class MeterReadingController implements Initializable {
                       
                     int curReadingValue = getTableView().getItems().get(getIndex()).getCurReading();
                     String conCurReadingValue = curReadingValue != 0?String.valueOf(curReadingValue):"";
-                    System.out.println(conCurReadingValue);
                     if (!conCurReadingValue.isEmpty()) {
                         textField.setText(conCurReadingValue);
                         textField.setDisable(true);
@@ -189,87 +187,7 @@ public class MeterReadingController implements Initializable {
           });       
         dateAddedCol.setCellValueFactory(new PropertyValueFactory<>("CurReadingDate"));
         eneteredByCol.setCellValueFactory(new PropertyValueFactory<>("CollectorName"));
-        statusCol.setCellFactory(new Callback<TableColumn<MeterReading, Integer>, TableCell<MeterReading, Integer>>() {
-            @Override
-            public TableCell<MeterReading, Integer> call(TableColumn<MeterReading, Integer> param) {
-                return new TableCell<MeterReading, Integer>() {
-                    @Override
-                    protected void updateItem(Integer item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                            setText(null);
-                        } else {
-                            MeterReading selectedMeterReading = getTableView().getItems().get(getIndex());
-                            try {
-                                MeterReading request = meterReadingModel.viewRequest(selectedMeterReading.getMeterReadingId());
-                                    if(request!= null){
-                                       String statusName = request.getStatus();
-                                       if(statusName.equals("Approved")){
-                                           setText("Edited");
-                                       }
-                                    }else{
-                                       setText(null);
-                                    }
-                            } catch (SQLException ex) {
-                            }
-                        }
-                    }
-                };
-            }
-        });            
-        requestCol.setCellFactory(new Callback<TableColumn<MeterReading, Integer>, TableCell<MeterReading, Integer>>() {
-            @Override
-            public TableCell<MeterReading, Integer> call(TableColumn<MeterReading, Integer> param) {
-                return new TableCell<MeterReading, Integer>() {
-                    final Button viewButton = new Button("view");
-
-                    {
-                        viewButton.getStyleClass().add("requestBtn");
-                        viewButton.setOnAction(event -> {
-                            MeterReading selectedMeterReading = getTableView().getItems().get(getIndex());
-                            try {
-                                if(viewButton.getText().equals("Pending")){
-                                    viewEditRequest(selectedMeterReading.getMeterReadingId());
-                                }else{
-                                    viewEditRequestStatus(selectedMeterReading.getMeterReadingId());
-                                }
-                            } catch (IOException ex) {
-                                Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
-                            } catch (SQLException ex) {
-                                Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        });
-                    }
-
-                    @Override
-                    protected void updateItem(Integer item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                            setText(null);
-                        } else {
-                            MeterReading selectedMeterReading = getTableView().getItems().get(getIndex());
-                            try {
-                                MeterReading request = meterReadingModel.viewRequest(selectedMeterReading.getMeterReadingId());
-                                if(request!= null){
-                                   String statusName = request.getStatus();
-                                  // if(!statusName.equals("Rejected")){
-                                        viewButton.setText(statusName);
-                                        HBox buttonsBox = new HBox(new HBox(5, viewButton));
-                                        buttonsBox.setAlignment(Pos.CENTER);
-                                        setGraphic(buttonsBox);
-                                //   }
-                                }else{
-                                   setText(null);
-                                }
-                            } catch (SQLException ex) {
-                            }
-                        }
-                    }
-                };
-            }
-        });       
+        statusCol.setCellValueFactory(new PropertyValueFactory<>("Status"));
         actionCol.setCellFactory(new Callback<TableColumn<MeterReading, Integer>, TableCell<MeterReading, Integer>>() {
             @Override
             public TableCell<MeterReading, Integer> call(TableColumn<MeterReading, Integer> param) {
@@ -293,29 +211,23 @@ public class MeterReadingController implements Initializable {
                                 String updatedCurReadingString = String.valueOf(selectedMeterReading.getCurReading());
 
                                     if (!updatedCurReadingString.isEmpty()) {
-                                        if(selectedMeterReading.getPrevReading()<Integer.parseInt(updatedCurReadingString)){
-                                        System.out.println("Saving updated meter reading for meter Reading ID: " + selectedMeterReading.getMeterReadingId());
-                                            
+                                        if(Integer.parseInt(updatedCurReadingString)>=selectedMeterReading.getPrevReading()){
+                                           
                                             LocalDate currentDate = selectedMeterReading.getReadingDate();
-                                            LocalDate billDateValue = null;
-                                            LocalDate dueDateValue = null;
-                                            int ratePerCubicMeter = 0;
                                             try {
-                                                billDateValue = currentDate.plusDays(meterReadingModel.getBillDaysOffset());
-                                                dueDateValue = billDateValue.plusDays(meterReadingModel.getDueDateDays());
-                                                ratePerCubicMeter = meterReadingModel.getRate();
-                                            } catch (SQLException ex) {
-                                                 Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
-                                            }
-                                             int consumptionValue = Integer.parseInt(updatedCurReadingString) - selectedMeterReading.getPrevReading();
+                                                LocalDate billDateValue = currentDate.plusDays(meterReadingModel.getBillDaysOffset());
+                                                LocalDate dueDateValue = billDateValue.plusDays(meterReadingModel.getDueDateDays());
+                                                int ratePerCubicMeter = meterReadingModel.getRate();
+                                            
+                                                int consumptionValue = Integer.parseInt(updatedCurReadingString) - selectedMeterReading.getPrevReading();
 
-                                            double billAmount = consumptionValue*ratePerCubicMeter;
-                                            try {
+                                                double billAmount = consumptionValue*ratePerCubicMeter;
+                                            
                                                 meterReadingModel.saveCurrentReading(selectedMeterReading.getMeterReadingId(),Integer.parseInt(updatedCurReadingString),logAccount.getAccount());                       
 
-                                                meterReadingModel.addBillToConsumer(selectedMeterReading.getMeterId(), selectedMeterReading.getMeterReadingId(), 
+                                                meterReadingModel.addBillToConsumer(selectedMeterReading.getMeterId(), selectedMeterReading.getcID() ,selectedMeterReading.getMeterReadingId(), 
                                                                                                   billDateValue, dueDateValue, consumptionValue, ratePerCubicMeter,billAmount);
-                                                modal("Meter Reading Save");
+                                                modal("Meter Reading Save",1);
                                                 loadMeterReading();
                                             } catch (SQLException ex) {
                                                 Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
@@ -324,20 +236,24 @@ public class MeterReadingController implements Initializable {
                                             }
                                         }else{
                                             try {
-                                                modal("Current reading should exceed the previous reading");
+                                                modal("Current reading should exceed the previous reading",2);
                                             } catch (IOException ex) {
                                                 Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
                                             }
                                         }
                                     }
                             });
-
-
                             viewBills.setOnAction(event -> {
                             });
                             editButton.setOnAction(event -> {
-                                MeterReading selectedMeterReading = getTableView().getItems().get(getIndex());
-                            
+                                MeterReading meterReading = getTableView().getItems().get(getIndex());
+                                try {
+                                    editReading(meterReading.getMeterReadingId(),meterReading.getPrevReading() ,meterReading.getCurReading());
+                                } catch (IOException ex) {
+                                    Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
                             });
                         }
 
@@ -348,9 +264,9 @@ public class MeterReadingController implements Initializable {
                         setGraphic(null);
                         setText(null);
                     } else {
-                        MeterReading selectedMeterReading = getTableView().getItems().get(getIndex());
+                        MeterReading meterReading = getTableView().getItems().get(getIndex());
                         try {
-                            if(meterReadingModel.checkCurrentReading(selectedMeterReading.getMeterId(),selectedMeterReading.getMeterReadingId())){
+                            if(meterReading.getCurReading() != 0){
                                 saveButton.setDisable(true);
                                 viewBills.setDisable(false);
                             }else{ 
@@ -358,8 +274,9 @@ public class MeterReadingController implements Initializable {
                                 viewBills.setDisable(true);
                             }
                             
-                            boolean checkInvoice = meterReadingModel.checkInvoice(selectedMeterReading.getMeterReadingId());
-                            if(meterReadingModel.viewRequest(selectedMeterReading.getMeterReadingId())!=null || checkInvoice == true){
+                            boolean checkInvoice = meterReadingModel.checkInvoice(meterReading.getMeterReadingId());
+                            if(meterReading.getCurReading() == 0 || checkInvoice == true ||
+                                    meterReadingModel.checkBillingStatusByMrID(meterReading.getMeterReadingId()) == true){
                                 editButton.setDisable(true);
                             }else{
                                 editButton.setDisable(false);
@@ -379,8 +296,10 @@ public class MeterReadingController implements Initializable {
                 };
             }
         });            
-        monthChoiceBox.setOnAction(this::choiceBox);
-        yearChoiceBox.setOnAction(this::choiceBox);
+        monthChoiceBox.setOnAction(this::monthChoice);
+        yearChoiceBox.setOnAction(this::yearChoice);
+        statusChoiceBox.setOnAction(this::choiceBox);
+        
     }  
     private ImageView loadSvgIcon(String path) {
         Image image = new Image(getClass().getResourceAsStream(path));
@@ -389,24 +308,6 @@ public class MeterReadingController implements Initializable {
         imageView.setFitHeight(18); // Set the height as needed
         return imageView;
     }
-    ObservableList<String> months = 
-                FXCollections.observableArrayList(
-                        "Jan","Feb","Mar","Apr","May","Jun",
-                        "Jul","Aug","Sep","Oct","Nov","Dec");
-    public void setChoices() throws SQLException{
-        monthChoiceBox.setItems(months);
-        LocalDate date = LocalDate.now();
-        int month = date.getMonthValue()-1;
-        monthChoiceBox.setValue(months.get(month));
-        for(MeterReading meterReading: meterReadingModel.getMeterReading()){
-            String yearSplit[]= String.valueOf(meterReading.getReadingDate()).split("-");
-            
-            if(!yearChoiceBox.getItems().contains(yearSplit[0])){
-                yearChoiceBox.getItems().add(yearSplit[0]);
-            }
-        }
-        yearChoiceBox.setValue(String.valueOf(date.getYear()));
-    }
     public void choiceBox(ActionEvent event){
         try {
             loadMeterReading();
@@ -414,55 +315,80 @@ public class MeterReadingController implements Initializable {
             Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public void loadMeterReading() throws SQLException {
-        int month = months.indexOf(monthChoiceBox.getValue()) + 1;
-        int year = Integer.parseInt(yearChoiceBox.getValue());
-        addMeterReading.setDisable(meterReadingModel.checkCurrentReadingMonth());
+    public void setChoices() throws SQLException {      
+        yearChoiceBox.getItems().clear();
+        yearChoiceBox.getItems().add("All");
+        for(MeterReading meterReading: meterReadingModel.getMeterReading()){
+            String splitDate[] = String.valueOf(meterReading.getReadingDate()).split("-");
+            if(!yearChoiceBox.getItems().contains(splitDate[0])){
+                yearChoiceBox.getItems().add(splitDate[0]);
+            }
+        }
+        yearChoiceBox.setValue(String.valueOf(LocalDate.now().getYear()));
+     
+        monthChoiceBox.getItems().clear();
+        monthChoiceBox.setValue(months.get(LocalDate.now().getMonthValue() - 1));
+        monthChoiceBox.getItems().add("All");
+        for (MeterReading meterReading: meterReadingModel.getMeterReading()) {
+            String splitDate[] = String.valueOf(meterReading.getReadingDate()).split("-");
+            if (!monthChoiceBox.getItems().contains(months.get(Integer.parseInt(splitDate[1]) - 1))
+              && yearChoiceBox.getValue().equals(splitDate[0])) {
+                monthChoiceBox.getItems().add(months.get(Integer.parseInt(splitDate[1]) - 1));
+            }
+        }
+    }
+    public void monthChoice(ActionEvent event){
         try {
-           meterReadingTable.setItems(meterReadingModel.filterMeterReading(month, year));
-          // meterReadingTable.setItems(meterReadingModel.getMeterReading());
+            loadMeterReading();
         } catch (SQLException ex) {
             Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public void viewEditRequest(int meterReadingID) throws IOException, SQLException{
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/meterReading/viewEditRequest.fxml"));
-       
-        Parent rootNode = loader.load();
-
-        ViewEditRequestController ViewEditRequestController = loader.getController();
-        ViewEditRequestController.setMeterReading(meterReadingID);
-        ViewEditRequestController.setController(this);
-        Stage modalWindow = new Stage();
-        modalWindow.setResizable(false);
-        modalWindow.setScene(new Scene(rootNode));
-
-        modalWindow.initModality(Modality.APPLICATION_MODAL);
-        modalWindow.centerOnScreen();
-        modalWindow.setTitle("Request Edit");
-        modalWindow.setOpacity(1);
-        modalWindow.show();
-       
+    public void yearChoice(ActionEvent event){
+        monthChoiceBox.getItems().clear();
+        monthChoiceBox.setValue("All");
+        monthChoiceBox.getItems().add("All");
+        try {
+            for (MeterReading meterReading: meterReadingModel.getMeterReading()) {
+                String splitDate[] = String.valueOf(meterReading.getReadingDate()).split("-");
+                if (!monthChoiceBox.getItems().contains(months.get(Integer.parseInt(splitDate[1]) - 1))
+                && yearChoiceBox.getValue().equals(splitDate[0])) {
+                    monthChoiceBox.getItems().add(months.get(Integer.parseInt(splitDate[1]) - 1));
+                }
+            }
+            loadMeterReading();
+        } catch (SQLException ex) {
+          
+        }
     }
-    public void viewEditRequestStatus(int meterReadingID) throws IOException, SQLException{
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/meterReading/viewEditRequestStatus.fxml"));
-       
-        Parent rootNode = loader.load();
-
-        ViewEditRequestStatusController ViewEditRequestStatusController = loader.getController();
-        ViewEditRequestStatusController.setMeterReading(meterReadingID);
-        ViewEditRequestStatusController.setController(this);
-        Stage modalWindow = new Stage();
-        modalWindow.setResizable(false);
-        modalWindow.setScene(new Scene(rootNode));
-
-        modalWindow.initModality(Modality.APPLICATION_MODAL);
-        modalWindow.centerOnScreen();
-        modalWindow.setTitle("Request Edit");
-        modalWindow.setOpacity(1);
-        modalWindow.show();
-       
+    public void loadMeterReading() throws SQLException {
+        int month = monthChoiceBox.getValue()== "All"?0: months.indexOf(monthChoiceBox.getValue())+1;
+        int year = yearChoiceBox.getValue()== "All"?0: Integer.parseInt(yearChoiceBox.getValue());
+        addMeterReading.setDisable(meterReadingModel.checkCurrentReadingMonth());
+        meterReadingTable.setItems(meterReadingModel.filterMeterReading(month, year,searchVal.getText()));
+        updateSaveAllBtn();
     }
+    public void editReading(int meterReadingID, int curReading, int oldValue) throws IOException, SQLException{
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/meterReading/editReading.fxml"));
+       
+        VBox modal = loader.load();
+        EditReadingController editCon = loader.getController();
+        editCon.setMeterReading(meterReadingID,curReading, oldValue);
+        editCon.setController(this);
+        editCon.mainPanel(mainPanel);
+        Stage internalFrame = new Stage();
+        internalFrame.initStyle(StageStyle.UTILITY); // Customize the stage style
+        internalFrame.initModality(Modality.WINDOW_MODAL);
+        internalFrame.initOwner(mainPanel.getScene().getWindow()); // Set the owner stage (mainPanel's stage)
+       // internalFrame.getIcons().add(getIcon());
+        internalFrame.setTitle("Edit Reading Value");
+        Scene scene = new Scene(modal);
+        internalFrame.setScene(scene);
+        internalFrame.setResizable(false);
+
+        internalFrame.show();
+    }
+    
     @FXML
     private void addMeterReading(ActionEvent event) throws SQLException {
         meterReadingModel.addNewMeterReading();
@@ -488,7 +414,7 @@ public class MeterReadingController implements Initializable {
                 if(!meterReadingModel.checkCurrentReading(meterReading.getMeterId(), meterReading.getMeterReadingId())){
                     try {
                         meterReadingModel.saveCurrentReading(meterReading.getMeterReadingId(), currentReading, logAccount.getAccount());
-                        meterReadingModel.addBillToConsumer(meterReading.getMeterId(), meterReading.getMeterReadingId(), billDate, dueDate, consumption,rate, billAmount);
+                        meterReadingModel.addBillToConsumer(meterReading.getMeterId(), meterReading.getcID() ,meterReading.getMeterReadingId(), billDate, dueDate, consumption,rate, billAmount);
                     } catch (SQLException ex) {
                         Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -501,23 +427,23 @@ public class MeterReadingController implements Initializable {
                 }
             }
         }
-        if(modal == 1){
-            modal("Some of readings cannot be saved because current reading field is empty.");
-        }else{
-            modal("Some of readings does not exceed the previous reading.");
-        }
+//        if(modal == 1){
+//            modal("Some of readings cannot be saved because current reading field is empty.");
+//        }else{
+//            modal("Some of readings does not exceed the previous reading.");
+//        }
         loadMeterReading();
     }
     public void updateSaveAllBtn(){
-        for(MeterReading meter:meterReadingData){
-            if(meter.getCurReading() == 0){
+        for(MeterReading meterReading : meterReadingTable.getItems()){
+            if(meterReading.getCurReading() != 0){
                 saveAllBtn.setDisable(true);
             }else{
                 saveAllBtn.setDisable(false);
             }
         }
     }
-    public void modal(String prompt) throws IOException{
+    public void modal(String prompt, int type) throws IOException{
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Modal.fxml"));
         VBox modal = loader.load();
         ModalController modCOn = loader.getController();
@@ -531,10 +457,15 @@ public class MeterReadingController implements Initializable {
         Scene scene = new Scene(modal);
         internalFrame.setScene(scene);
 
-        internalFrame.setTitle("Internal Frame");
+        internalFrame.setTitle(type == 1?"Success":"Error");
         internalFrame.setResizable(false);
 
         internalFrame.show();
+    }
+
+    @FXML
+    private void search(ActionEvent event) throws SQLException {
+        loadMeterReading();
     }
 
 }

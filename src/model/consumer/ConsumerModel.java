@@ -26,9 +26,7 @@ public class ConsumerModel {
      *
      */
     public DbConfig dbConfig = new DbConfig();
-    public ConsumerModel(){
-        this.dbConfig = new DbConfig();
-    }
+    
     public ObservableList<Consumer> getConsumers() throws SQLException {
         ObservableList<Consumer> consumers = FXCollections.observableArrayList();
         try (Connection connection = dbConfig.getConnection();
@@ -116,7 +114,6 @@ public class ConsumerModel {
         }
         return consumers;
     }
-
     private String getStatusLabel(int cStatus) {
         switch (cStatus) {
             case 1:
@@ -463,19 +460,13 @@ public class ConsumerModel {
     }
     public int checkAddMeterNo(String meterNumber ) throws SQLException {
         String query =  "SELECT\n" +
-                        "    c.cStatus,\n" +
-                        "    cm.cMStatus,\n" +
-                        "    m.meterStatus\n" +
-                        "FROM\n" +
-                        "	conscessionaries c \n" +
-                        "JOIN\n" +
-                        "	consumermeternumber cm ON c.cID = cm.cID\n" +
-                        "JOIN\n" +
-                        "	meter m ON cm.meterID = m.meterID\n" +
+                        "    mchStatus,\n" +
+                        "    meterStatus\n" +
+                        "FROM get_meterNumbers\n" +
                         "WHERE \n" +
-                        "	m.meterNumber = ?\n" +
+                        "	meterNumber = ?\n" +
                         "ORDER BY\n" +
-                        "	cm.date DESC LIMIT 1";
+                        "	date DESC LIMIT 1;";
 
         try (Connection connection = dbConfig.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -486,18 +477,14 @@ public class ConsumerModel {
             
             if(rs.next()){
                 int meterStatus = rs.getInt("meterStatus");
-                int cMStatus = rs.getInt("cMStatus");
+                int cMStatus = rs.getInt("mchStatus");
                 
                 if(cMStatus == 1 && meterStatus == 1){//exist and active
                     return 1;
-                }else if(cMStatus == 2  && meterStatus == 1) {// exist but its inactive and user is active
+                }else if(cMStatus == 2  && meterStatus == 1) {// exist but its active and connection status is disconnected
                     return 2;
-                }else if(cMStatus == 2 && meterStatus == 1) {//exist but its inactive and the user also inactive 
-                    return 3;
                 }else if(meterStatus == 2) {//broken meter number 
                     return 4;
-                }else if(meterStatus == 1 && cMStatus == 3) {//broken meter number 
-                    return 5;
                 }
                 
             }
@@ -507,32 +494,53 @@ public class ConsumerModel {
         }
         return 0;
     }
-    //check if meter exist: exist and active || exist but its inactive and user is active || exist but its inactive and the user also inactive   
     public void insertMeterNo(int cID, String meterNo, String meterLocation, LocalDate installationDate) throws SQLException {
         try (Connection connection = dbConfig.getConnection()) {
             connection.setAutoCommit(false);
 
-            String insertMeterNoSQL = "INSERT INTO meter ( meterNumber, meterStatus) VALUES ( ?,?);";
+            String insertMeterNoSQL = "INSERT INTO meter (meterNumber, meterStatus) VALUES (?, ?);";
             try (PreparedStatement meterNoStatement = connection.prepareStatement(insertMeterNoSQL, Statement.RETURN_GENERATED_KEYS)) {
                 meterNoStatement.setString(1, meterNo);
                 meterNoStatement.setInt(2, 1);
 
                 int affectedRows = meterNoStatement.executeUpdate();
+
                 if (affectedRows > 0) {
-                    // Get the generated meter ID
                     try (ResultSet generatedKeys = meterNoStatement.getGeneratedKeys()) {
                         if (generatedKeys.next()) {
                             int meterID = generatedKeys.getInt(1);
-                            String addRelationshipQuery = "INSERT INTO consumermeternumber(cID, meterID,meterLocation,date, cMStatus) VALUES (?, ?,?,?, 1);";
+                            String addRelationshipQuery = "INSERT INTO consumermeternumber (cID, meterID, meterLocation) VALUES (?, ?, ?);";
 
-                            try (PreparedStatement addRelationshipStatement = connection.prepareStatement(addRelationshipQuery)) {
+                            try (PreparedStatement addRelationshipStatement = connection.prepareStatement(addRelationshipQuery, Statement.RETURN_GENERATED_KEYS)) {
                                 addRelationshipStatement.setInt(1, cID);
                                 addRelationshipStatement.setInt(2, meterID);
                                 addRelationshipStatement.setString(3, meterLocation);
-                                addRelationshipStatement.setDate(4, Date.valueOf(installationDate));
-                                addRelationshipStatement.executeUpdate();
+
+                                int cmnInserted = addRelationshipStatement.executeUpdate();
+
+                                if (cmnInserted > 0) {
+                                    try (ResultSet generatedCmID = addRelationshipStatement.getGeneratedKeys()) {
+                                        if (generatedCmID.next()) {
+                                            int cmID = generatedCmID.getInt(1);
+                                            String insertMCH = "INSERT INTO meterconnectionhistory (cmID, date, mchStatus) VALUES (?, CURRENT_DATE, 1);";
+
+                                            try (PreparedStatement mchStatement = connection.prepareStatement(insertMCH)) {
+                                                mchStatement.setInt(1, cmID);
+
+                                                int mchInserted = mchStatement.executeUpdate();
+
+                                                if (mchInserted > 0) {
+                                                    System.out.println("Meter number added successfully.");
+                                                } else {
+                                                    System.out.println("Failed to add meter connection history.");
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    System.out.println("Failed to add consumer meter number relationship.");
+                                }
                             }
-                            System.out.println("Meter number added successfully.");
                         }
                     }
                 } else {
@@ -567,15 +575,13 @@ public class ConsumerModel {
         }
     }
     public boolean proceedAdding(int cID, String meterNo, String meterLocation, LocalDate installationDate) throws SQLException {
-        String query = "SELECT * FROM get_meternumbers WHERE meterNumber = ? ORDER BY date DESC LIMIT 1;";
+        String getLatestMeterQuery = "SELECT cmID, meterID FROM get_meternumbers WHERE meterNumber = ? ORDER BY date DESC LIMIT 1;";
 
         try (Connection connection = dbConfig.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement getLatestMeterStatement = connection.prepareStatement(getLatestMeterQuery)) {
 
-            int parameterIndex = 1;
-            statement.setString(parameterIndex++, meterNo);
-
-            ResultSet rs = statement.executeQuery();
+            getLatestMeterStatement.setString(1, meterNo);
+            ResultSet rs = getLatestMeterStatement.executeQuery();
 
             int cmID = 0;
             int meterID = 0;
@@ -584,35 +590,45 @@ public class ConsumerModel {
                 cmID = rs.getInt("cmID");
                 meterID = rs.getInt("meterID");
             }
-            // Update meterStatus in the 'meter' table
-//            String updateMeterSQL = "UPDATE meter SET meterStatus = ? WHERE meterID = ?";
-//            try (PreparedStatement updateMeterStatement = connection.prepareStatement(updateMeterSQL)) {
-//                updateMeterStatement.setInt(1, 2);
-//                updateMeterStatement.setInt(2, meterID);
-//                updateMeterStatement.executeUpdate();
-//            }
 
-            String updateConsumerSQL = "UPDATE consumermeternumber SET cMStatus = 3 WHERE consumerMeterNumberID = ?;";
-            String addRelationshipQuery = "INSERT INTO consumermeternumber(cID, meterID, meterLocation, date, cMStatus) VALUES (?, ?, ?, ?, 1);";
+            String insertMchStatusSQL = "INSERT INTO meterconnectionhistory (cmID, date, mchStatus) VALUES (?, CURRENT_DATE, 3)";
+            try (PreparedStatement insertMchStatusStatement = connection.prepareStatement(insertMchStatusSQL)) {
+                insertMchStatusStatement.setInt(1, cmID);
+                int insertMchStatusInsert = insertMchStatusStatement.executeUpdate();
+                if (insertMchStatusInsert > 0) {
+                    System.out.println("Meter connection history status updated successfully.");
+                }
+            }
+
+            String insertCMNSql = "INSERT INTO consumermeternumber(cID, meterID, meterLocation) VALUES (?, ?, ?);";
 
             try {
                 connection.setAutoCommit(false);
 
-                try (PreparedStatement updateStatement = connection.prepareStatement(updateConsumerSQL)) {
-                    updateStatement.setInt(1, cmID);
-                    int rowsAffected = updateStatement.executeUpdate();
+                try (PreparedStatement insertStatement = connection.prepareStatement(insertCMNSql, Statement.RETURN_GENERATED_KEYS)) {
+                    insertStatement.setInt(1, cID);
+                    insertStatement.setInt(2, meterID);
+                    insertStatement.setString(3, meterLocation);
+
+                    int rowsAffected = insertStatement.executeUpdate();
 
                     if (rowsAffected > 0) {
-                        try (PreparedStatement addRelationshipStatement = connection.prepareStatement(addRelationshipQuery)) {
-                            addRelationshipStatement.setInt(1, cID);
-                            addRelationshipStatement.setInt(2, meterID);
-                            addRelationshipStatement.setString(3, meterLocation);
-                            addRelationshipStatement.setDate(4, Date.valueOf(installationDate));
-                            addRelationshipStatement.executeUpdate();
+                        try (ResultSet newCMN = insertStatement.getGeneratedKeys()) {
+                            if (newCMN.next()) {
+                                int newCMNID = newCMN.getInt(1);
+                                String insertNewMCHStatusSQL = "INSERT INTO meterconnectionhistory (cmID, date, mchStatus) VALUES (?, CURRENT_DATE, 1)";
+                                try (PreparedStatement insertNewMchStatusStatement = connection.prepareStatement(insertNewMCHStatusSQL)) {
+                                    insertNewMchStatusStatement.setInt(1, newCMNID);
+                                    int insertNewMchStatusInsert = insertNewMchStatusStatement.executeUpdate();
+                                    if (insertNewMchStatusInsert > 0) {
+                                        System.out.println("New meter connection history status updated successfully.");
+                                    }
+                                }
+                                System.out.println("Meter number transferred successfully.");
+                                connection.commit();
+                                return true;
+                            }
                         }
-                        System.out.println("Meter number transferred successfully.");
-                        connection.commit();
-                        return true;
                     } else {
                         System.out.println("Failed to update consumer meter status.");
                     }
@@ -624,10 +640,12 @@ public class ConsumerModel {
             } finally {
                 connection.setAutoCommit(true);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
         }
         return false;
     }
+
 }

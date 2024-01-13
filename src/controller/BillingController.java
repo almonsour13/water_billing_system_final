@@ -214,7 +214,7 @@ public class BillingController implements Initializable {
                     getStyleClass().clear(); 
                 } else {
                     setText(status);
-
+                    
                     switch (status.toLowerCase()) {
                         case "paid":
                             getStyleClass().setAll("active-cell");
@@ -466,7 +466,6 @@ public class BillingController implements Initializable {
                 };
             }
         });
-
         billTable.setRowFactory(tv -> new TableRow<Bills>() {
             @Override
             protected void updateItem(Bills item, boolean empty) {
@@ -529,9 +528,7 @@ public class BillingController implements Initializable {
             Logger.getLogger(MeterReadingController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public void setChoices() throws SQLException {
-       
-
+    public void setChoices() throws SQLException {      
         yearChoiceBox.getItems().clear();
         yearChoiceBox.getItems().add("All");
         for(Bills bill:billsModel.getBills()){
@@ -541,7 +538,6 @@ public class BillingController implements Initializable {
             }
         }
         yearChoiceBox.setValue(String.valueOf(LocalDate.now().getYear()));
-     //  yearChoiceBox.setValue("All");
      
         monthChoiceBox.getItems().clear();
         monthChoiceBox.setValue(months.get(LocalDate.now().getMonthValue() - 1));

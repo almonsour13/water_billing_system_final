@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1100.0" spacing="10.0" stylesheets="@../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.meterNumber.MeterConnectionHistoryController">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="67.0" prefWidth="1080.0">
+         <children>
+            <Label graphicTextGap="6.0" prefHeight="17.0" prefWidth="298.0" text="Meter Number Connection History:">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="783.0">
+               <children>
+                  <Button fx:id="backBtn" mnemonicParsing="false" onAction="#back" prefHeight="25.0" prefWidth="49.0" text="Back" />
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="702.0" spacing="10.0">
+         <children>
+            <Label text="Search:" />
+            <TextField fx:id="searchVal" onKeyTyped="#search" prefHeight="25.0" prefWidth="170.0" promptText="Search" />
+            <Label text="Month:" />
+            <ChoiceBox fx:id="monthChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+            <Label text="Year:" />
+            <ChoiceBox fx:id="yearChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+            <Label text="Connection Status:" />
+            <ChoiceBox fx:id="statusChoiceBox" prefHeight="27.0" prefWidth="132.0" />
+            <Label text="Meter Location" />
+            <ChoiceBox fx:id="meterLocChoiceBox" prefHeight="25.0" prefWidth="70.0" />
+         </children>
+      </HBox>
+      <VBox prefHeight="551.0" prefWidth="1080.0" style="-fx-background-color: white;" styleClass="header-container">
+         <children>
+            <TableView fx:id="meterNumberTable" prefHeight="564.0" prefWidth="1060.0">
+               <columns>
+                  <TableColumn fx:id="noCol" prefWidth="42.0" styleClass="nameCol" text="No" />
+                  <TableColumn fx:id="meterLocationCol" prefWidth="190.0" styleClass="nameCol" text="Meter Location" />
+                  <TableColumn fx:id="installationDateCol" prefWidth="175.0" styleClass="nameCol" text="Date" />
+                  <TableColumn fx:id="nameCol" prefWidth="193.0" styleClass="nameCol" text="Name" />
+                  <TableColumn fx:id="statusCol" prefWidth="206.0" text="Connection Status" />
+                  <TableColumn fx:id="transferredToCol" prefWidth="251.0" text="Transferred to" />
+               </columns>
+            </TableView>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</VBox>

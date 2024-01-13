@@ -34,6 +34,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.account.Account;
 import model.account.AccountModel;
+import view.meterNumber.MeterNumberController;
+import view.meterReading.MeterReadingEditHistoryController;
 import view.settings.settingPages.SystemLogsModel;
 
 /**
@@ -90,13 +92,13 @@ public class HomeWindowController implements Initializable {
     @FXML
     private VBox meterReadingDropdown;
     private VBox reportsDropdown;
-    @FXML
-    private Button editRequestBtn;
     private SystemLogsModel systemLogsModel = new SystemLogsModel();
     @FXML
     private Button reporBtn;
     @FXML
     private Button connectionHistoryBtn;
+    @FXML
+    private Button editReadingHistoryBtn;
 
     /**
      * Initializes the controller class.
@@ -104,8 +106,8 @@ public class HomeWindowController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {      
         try {
-            loadPage("dashboard");
-            updateButtonStyles(dashboardBtn);
+            loadPage("meterNumber");
+            updateButtonStyles(meterNumberBtn);
             setAccount();
         } catch (IOException ex) {
             Logger.getLogger(HomeWindowController.class.getName()).log(Level.SEVERE, null, ex);
@@ -151,6 +153,12 @@ public class HomeWindowController implements Initializable {
             MeterReadingController meReadCon = new MeterReadingController();
             meReadCon.mainPanel(panel);
             meReadCon.pageSetter(parentContainer);
+        }else if(page.equals("editReadingHistory")){
+            loader = new FXMLLoader(getClass().getResource("/view/meterReading/meterReadingEditHistory.fxml"));
+            pageName.setText("Meter Reading Edit History");
+            MeterReadingEditHistoryController meReadCon = new MeterReadingEditHistoryController();
+            meReadCon.mainPanel(panel);
+            meReadCon.pageSetter(parentContainer);
         }else if(page.equals("billing")){
             loader = new FXMLLoader(getClass().getResource("/view/billing/billing.fxml"));
             pageName.setText("Bills");
@@ -172,6 +180,9 @@ public class HomeWindowController implements Initializable {
         }else if(page.equals("meterNumber")){
             loader = new FXMLLoader(getClass().getResource("/view/meterNumber/meterNumber.fxml"));
             pageName.setText("Meter");
+            MeterNumberController con = new MeterNumberController();
+            con.mainPanel(panel);
+            con.pageSetter(parentContainer);
         }
         else if(page.equals("reports")){
             loader = new FXMLLoader(getClass().getResource("/view/reports/reports.fxml"));
@@ -319,6 +330,12 @@ public class HomeWindowController implements Initializable {
     private void connectionHistory(ActionEvent event) throws SQLException, IOException {
         loadPage("connectionHistory");
         updateButtonStyles(connectionHistoryBtn);
+    }
+
+    @FXML
+    private void editReadingHistory(ActionEvent event) throws IOException, SQLException {
+        loadPage("editReadingHistory");
+        updateButtonStyles(editReadingHistoryBtn);
     }
     
 }

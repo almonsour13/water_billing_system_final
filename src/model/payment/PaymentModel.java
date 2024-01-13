@@ -112,88 +112,15 @@ public class PaymentModel {
                             rs.getString("name"),
                             rs.getDate("dueDate").toLocalDate(),
                             rs.getDate("paymentDate").toLocalDate(),
-                            rs.getDouble("totalAmount"),
+                            doubleFormatter(rs.getDouble("totalAmount")),
                             rs.getDouble("penaltyAmount"),
-                            rs.getDouble("paymentAmount"),
+                            doubleFormatter(rs.getDouble("paymentAmount")),
                             paymentStatus,
                             rs.getString("meterNumber"),
                             rs.getString("meterLocation")
                     ));
                     no++;
                 }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e; // Re-throw the exception
-        }
-        return payments;
-    }
-
-    public ObservableList<Payment> getLoc() throws SQLException {
-        ObservableList<Payment> payments = FXCollections.observableArrayList();
-        try (Connection connection = dbConfig.getConnection();
-             Statement statement = connection.createStatement()) {
-            String query =  "SELECT \n" +
-                            "	meterLocation \n" +
-                            "FROM \n" +
-                            "	get_payment\n" +
-                            "GROUP BY\n" +
-                            "	meterLocation\n" +
-                            "ORDER BY\n" +
-                            "	meterLocation;";
-            ResultSet rs = statement.executeQuery(query);
-            while (rs.next()) {
-                payments.add(new Payment(
-                   rs.getString("meterLocation")
-                ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e; // Re-throw the exception
-        }
-        return payments;
-    }
-    public ObservableList<Payment> getYear() throws SQLException {
-        ObservableList<Payment> payments = FXCollections.observableArrayList();
-        try (Connection connection = dbConfig.getConnection();
-             Statement statement = connection.createStatement()) {
-            String query =  "SELECT\n" +
-                            "	YEAR(p.paymentDate) AS year\n" +
-                            "FROM\n" +
-                            "	payment p\n" +
-                            "GROUP BY\n" +
-                            "	year\n" +
-                            "ORDER BY\n" +
-                            "	year;";
-            ResultSet rs = statement.executeQuery(query);
-            while (rs.next()) {
-                    payments.add(new Payment(
-                            rs.getInt("year")
-                    ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e; // Re-throw the exception
-        }
-        return payments;
-    }
-    public ObservableList<Payment> getMonth() throws SQLException {
-        ObservableList<Payment> payments = FXCollections.observableArrayList();
-        try (Connection connection = dbConfig.getConnection();
-             Statement statement = connection.createStatement()) {
-            String query =  "SELECT\n" +
-                            "	MONTH(p.paymentDate) AS month\n" +
-                            "FROM\n" +
-                            "	payment p\n" +
-                            "GROUP BY\n" +
-                            "	month\n" +
-                            "ORDER BY\n" +
-                            "	month;";
-            ResultSet rs = statement.executeQuery(query);
-            while (rs.next()) {
-                payments.add(new Payment(
-                   rs.getInt("month")
-                ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -240,5 +167,9 @@ public class PaymentModel {
             throw e; // Re-throw the exception
         }
         return payments;
+    }
+    public Double doubleFormatter(double value){
+        String formatted = String.format("%.2f", value*250);
+        return Double.parseDouble(formatted);
     }
 }

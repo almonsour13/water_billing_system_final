@@ -137,11 +137,11 @@ public class PaybillController implements Initializable {
             Double paymentAmountValue = Double.parseDouble(paymentAmount);
             Double totalAmountValue = Double.parseDouble(totalAmount.getText());
             if(paymentAmountValue >= totalAmountValue){
-                billModel.insertPayment(this.billID,paymentAmountValue);
+                double parseAmount = paymentAmountValue*0.0040;
+                billModel.insertPayment(this.billID,parseAmount);
                 Stage stage = (Stage) parentContainer.getScene().getWindow();
                 stage.close();
-                systemLogsModel.insertLog(logAccount.getAccount(), "Received payment of "+paymentAmountValue+" from"
-                        + "consumer ("+name.getText()+") for bill id "+billID+"");
+                systemLogsModel.insertLog(logAccount.getAccount(), "Payment received: $" + paymentAmountValue + " from " + name.getText() + " for bill #" + billID + ". Total: $" + totalAmountValue + ", Change: $" + (paymentAmountValue - totalAmountValue));
                 if(billingController != null){
                     billingController.showBilling();
                 }else{
@@ -154,7 +154,6 @@ public class PaybillController implements Initializable {
             modal("Enter Amount!");
         }
     }
-
     @FXML
     private void cancelPayment(ActionEvent event) {
         Stage stage = (Stage) parentContainer.getScene().getWindow();

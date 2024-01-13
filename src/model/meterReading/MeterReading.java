@@ -30,6 +30,7 @@ public class MeterReading {
     private LocalDate requestDate;
     private String reason;
     private int originalValue;
+    private int cID;
         
     
     
@@ -42,28 +43,9 @@ public class MeterReading {
         this.installationDate = installationDate;
         this.status = status;
     }
-    public MeterReading(int no,int meterReadingId, String MeterNo,String meterLocation, String name, LocalDate readingDate, int prevReading, int curReading) {
+    public MeterReading(int no,int cID, int meterID,int meterReadingId, String MeterNo,String meterLocation, String name, LocalDate readingDate, int prevReading, int curReading,String curReadingDate, String accountName, String status) {
         this.no = no;
-        this.meterReadingId = meterReadingId;
-        this.MeterNo = MeterNo;
-        this.meterLocation = meterLocation;
-        this.name = name;
-        this.readingDate = readingDate;
-        this.prevReading = prevReading;
-        this.curReading = curReading;
-    }
-    public MeterReading(int no,int meterID,int meterReadingId, String MeterNo, String name, LocalDate readingDate, int prevReading, int curReading) {
-        this.no = no;
-        this.meterId = meterID;
-        this.meterReadingId = meterReadingId;
-        this.MeterNo = MeterNo;
-        this.name = name;
-        this.readingDate = readingDate;
-        this.prevReading = prevReading;
-        this.curReading = curReading;
-    }
-    public MeterReading(int no,int meterID,int meterReadingId, String MeterNo,String meterLocation, String name, LocalDate readingDate, int prevReading, int curReading,String curReadingDate, String collectorName) {
-        this.no = no;
+        this.cID = cID;
         this.meterId = meterID;
         this.meterReadingId = meterReadingId;
         this.MeterNo = MeterNo;
@@ -73,7 +55,8 @@ public class MeterReading {
         this.prevReading = prevReading;
         this.curReading = curReading;
         this.curReadingDate = curReadingDate;
-        this.collectorName = collectorName;
+        this.collectorName = accountName;
+        this.status = status;
     }
 
     public MeterReading(int editRequestID, int meterReadingId, String name, LocalDate requestDate, int originalValue, int newValue, String reason, String status) {
@@ -87,6 +70,30 @@ public class MeterReading {
         this.reason = reason;
     }
 
+    public MeterReading(int no, int meterReadingId, int editRequestID,String MeterNo,String meterLocation, String name, LocalDate readingDate, int prevReading, int originalValue,  int newValue, LocalDate requestDate, String reason, String accountName ) {       
+        this.no = no;
+        this.MeterNo = MeterNo;
+        this.meterReadingId = meterReadingId;
+        this.name = name;
+        this.readingDate = readingDate;
+        this.prevReading = prevReading;
+        this.collectorName = accountName;
+        this.meterLocation = meterLocation;
+        this.editRequestID = editRequestID;
+        this.newValue = newValue;
+        this.reason = reason;
+        this.originalValue = originalValue;
+        this.requestDate = requestDate;
+    }
+    
+    public int getcID() {
+        return cID;
+    }
+
+    public void setcID(int cID) {
+        this.cID = cID;
+    }
+    
     public int getOriginalValue() {
         return originalValue;
     }

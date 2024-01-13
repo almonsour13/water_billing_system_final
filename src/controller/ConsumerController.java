@@ -74,8 +74,6 @@ public class ConsumerController implements Initializable {
     @FXML
     private TableColumn<Consumer, Integer> statusColumn;
     private HomeWindowController conCon;
-    @FXML
-    private Pane consumerContainer;
     ObservableList<Consumer> data;
     public ConsumerModel ConsumerModel;
     @FXML
@@ -108,6 +106,8 @@ public class ConsumerController implements Initializable {
     
     private  LoggedAccountSetter logAccount = new LoggedAccountSetter();
     private SystemLogsModel systemLogsModel = new SystemLogsModel();
+    @FXML
+    private Button addConsumerBtn;
     /**
      * Initializes the controller class.
      */
@@ -127,6 +127,8 @@ public class ConsumerController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         conCon = new HomeWindowController();
+        
+        addConsumerBtn.setGraphic(loadSvgIcon("/assets/icons/addPerson.png"));
         noColumn.setCellValueFactory(new PropertyValueFactory<>("no"));
         firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
         middleNameColumn.setCellValueFactory(new PropertyValueFactory<>("MidName"));
@@ -453,7 +455,7 @@ public class ConsumerController implements Initializable {
         showConsumerTable();
     } 
     private void viewConsumerProfile(int id) throws IOException, SQLException{
-        pageSetter.getChildren().clear();;
+        pageSetter.getChildren().clear();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/consumer/consumerProfile/consumerProfile.fxml"));
         Pane root = loader.load();
         ConsumerProfileController conPro = loader.getController();

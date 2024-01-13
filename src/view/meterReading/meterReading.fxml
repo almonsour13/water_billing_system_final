@@ -16,7 +16,7 @@
       <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="840.0" spacing="10.0">
          <children>
             <Label text="Search:" />
-            <TextField prefHeight="25.0" prefWidth="170.0" promptText="Search" />
+            <TextField fx:id="searchVal" onAction="#search" prefHeight="25.0" prefWidth="170.0" promptText="Search" />
             <Label text="Month:" />
             <ChoiceBox fx:id="monthChoiceBox" prefHeight="25.0" prefWidth="70.0" />
             <Label text="Year:" />
@@ -49,14 +49,13 @@
                   <TableColumn fx:id="noCol" prefWidth="30.0" text="No" />
                   <TableColumn fx:id="meterNoCol" prefWidth="103.0" text="Meter Number" />
                   <TableColumn fx:id="meterLocationCol" prefWidth="92.0" text="Meter Location" />
-                  <TableColumn fx:id="nameCol" prefWidth="101.0" styleClass="nameCol" text="Name" />
-                  <TableColumn fx:id="prevReadingCol" prefWidth="115.0" text="Previous Reading" />
-                  <TableColumn fx:id="curReadingCol" prefWidth="125.0" text="Current Reading" />
-                  <TableColumn fx:id="dateAddedCol" prefWidth="100.0" text="Date Added" />
-                  <TableColumn fx:id="eneteredByCol" prefWidth="99.0" text="Entered By" />
-                  <TableColumn fx:id="statusCol" prefWidth="70.0" text="Status" />
-                  <TableColumn fx:id="requestCol" prefWidth="95.0" text="Request Edit" />
-                  <TableColumn fx:id="actionCol" prefWidth="136.0" text="Action" />
+                  <TableColumn fx:id="nameCol" prefWidth="131.0" styleClass="nameCol" text="Name" />
+                  <TableColumn fx:id="prevReadingCol" prefWidth="127.0" text="Previous Reading" />
+                  <TableColumn fx:id="curReadingCol" prefWidth="115.0" text="Current Reading" />
+                  <TableColumn fx:id="dateAddedCol" prefWidth="118.0" text="Date Entered" />
+                  <TableColumn fx:id="eneteredByCol" prefWidth="108.0" text="Entered By" />
+                  <TableColumn fx:id="statusCol" prefWidth="113.0" text="Status" />
+                  <TableColumn fx:id="actionCol" prefWidth="121.0" text="Action" />
                </columns>
             </TableView>
          </children>
