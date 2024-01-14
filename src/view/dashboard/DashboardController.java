@@ -18,6 +18,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import model.dashboard.Dashboard;
 import model.dashboard.DashboardModel;
 
@@ -50,6 +51,13 @@ public class DashboardController implements Initializable {
     private Label totalBillsLabel;
     @FXML
     private BarChart<String, Double> incomeTrends;
+    @FXML
+    private Label totalConsumer;
+    @FXML
+    private VBox meterNum;
+    @FXML
+    private Label totalMeterNumber;
+
     
     
     public DashboardController(){
@@ -61,10 +69,15 @@ public class DashboardController implements Initializable {
             incomeBarChart();
             waterLineChart();
             billPieChart();
+            totalConsumer.setText(String.valueOf(dashboardModel.getTotalConsumer()));
+            totalMeterNumber.setText(String.valueOf(dashboardModel.getTotalMeterNumber()));
         } catch (SQLException ex) {
             Logger.getLogger(DashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }    
+    
+
     public void waterLineChart() throws SQLException{
         ObservableList<Dashboard> waterConsumption = dashboardModel.getWaterConsumption();
 

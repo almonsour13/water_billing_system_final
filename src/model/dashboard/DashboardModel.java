@@ -93,34 +93,7 @@ public class DashboardModel {
         
         return bills;   
     }
-    public Dashboard getConsumerAnalytics() throws SQLException{
-      Dashboard bills = null;
-        String query =  "SELECT\n" +
-                        "    SUM(CASE WHEN cStatus = 1 THEN 1 ELSE 0 END) AS Active,\n" +
-                        "    SUM(CASE WHEN cStatus = 2 THEN 1 ELSE 0 END) AS Disconnected,\n" +
-                        "    SUM(CASE WHEN cStatus = 3 THEN 1 ELSE 0 END) AS Cut,\n" +
-                        "    COUNT(*) AS totalCon\n" +
-                        "FROM\n" +
-                        "	conscessionaries;";
-
-        try (Connection connection = dbConfig.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            //statement.setInt(1, id);
-
-            ResultSet rs = statement.executeQuery();
-            if(rs.next()){
-                bills = new Dashboard(
-                        rs.getInt("Active"),
-                        rs.getInt("Disconnected"),
-                        rs.getInt("Cut"),
-                        rs.getInt("totalCon")
-                );
-            }
-            
-        }
-        return bills;   
-    }
-    public ObservableList<Dashboard> getWaterConsumption() throws SQLException{
+  public ObservableList<Dashboard> getWaterConsumption() throws SQLException{
         ObservableList<Dashboard> usage = FXCollections.observableArrayList();
         String query =  "SELECT\n" +
                         "    MONTH(mr.readingDate) AS month,\n" +
@@ -151,6 +124,57 @@ public class DashboardModel {
             }
         }
         return usage;
+    }
+    public int getTotalMeterNumber() throws SQLException{
+      
+                       String query =  "SELECT \n" +
+"	COUNT(meterNumber) AS Total_MeterNumber\n" +
+"\n" +
+"FROM meter m ";
+
+        try (Connection connection = dbConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            //statement.setInt(1, id);
+
+            ResultSet rs = statement.executeQuery();
+            int no = 1;
+            if (rs.next()) {
+                
+         
+                        int totalConsumer=rs.getInt("Total_MeterNumber");
+                        
+            
+        return totalConsumer;
+         
+            }
+        }
+        return 0;
+    }
+    
+    public int getTotalConsumer() throws SQLException{
+      
+                                String query =  "SELECT\n" +
+                        " 	COUNT(cID) AS Total_Consumer\n" +
+                        "FROM\n" +
+                        "	conscessionaries c";
+
+        try (Connection connection = dbConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            //statement.setInt(1, id);
+
+            ResultSet rs = statement.executeQuery();
+            int no = 1;
+            if (rs.next()) {
+                
+         
+                        int totalConsumer=rs.getInt("Total_Consumer");
+                        
+            
+        return totalConsumer;
+         
+            }
+        }
+        return 0;
     }
     public ObservableList<Dashboard> getRecentBills() throws SQLException{
         ObservableList<Dashboard> bills = FXCollections.observableArrayList();

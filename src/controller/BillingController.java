@@ -231,118 +231,7 @@ public class BillingController implements Initializable {
                     }
                 }
             }
-        });       
-        actionCol.setCellFactory(new Callback<TableColumn<Bills, Integer>, TableCell<Bills, Integer>>() {
-            @Override
-            public TableCell<Bills, Integer> call(TableColumn<Bills, Integer> param) {
-                return new TableCell<Bills, Integer>() {
-                    final Button sendNoticeBtn = new Button();
-                    final Button payBillBtn = new Button();
-                    final Button viewBillDetailsBtn = new Button();
-                    final Button viewPenaltyBtn = new Button();
-                    final Button printBill = new Button();
-
-                        {
-                            sendNoticeBtn.getStyleClass().add("actionBtn");
-                            sendNoticeBtn.setGraphic(loadSvgIcon("/assets/icons/speaker.png"));
-                            payBillBtn.getStyleClass().add("actionBtn");
-                            payBillBtn.setGraphic(loadSvgIcon("/assets/icons/payment.png"));
-                            viewBillDetailsBtn.getStyleClass().add("actionBtn");
-                            viewBillDetailsBtn.setGraphic(loadSvgIcon("/assets/icons/bills.png"));
-                            viewPenaltyBtn.getStyleClass().add("actionBtn");
-                            viewPenaltyBtn.setGraphic(loadSvgIcon("/assets/icons/warning.png"));
-                            printBill.getStyleClass().add("actionBtn");
-                            printBill.setGraphic(loadSvgIcon("/assets/icons/print.png"));
-                            
-                            sendNoticeBtn.setOnAction(event -> {
-                            });
-
-                            payBillBtn.setOnAction(event -> {
-                                Bills selectedBill = getTableView().getItems().get(getIndex());
-
-                                try {
-                                    payConsumerBill(selectedBill.getBillID());
-                                } catch (IOException ex) {
-                                    Logger.getLogger(BillingController.class.getName()).log(Level.SEVERE, null, ex);
-                                } catch (SQLException ex) {
-                                    Logger.getLogger(BillingController.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            });
-                            viewBillDetailsBtn.setOnAction(event -> {
-                                Bills selectedBill = getTableView().getItems().get(getIndex());
-                                try {
-                                    viewBillingDetails(selectedBill.getBillID());
-                                } catch (IOException ex) {
-                                    Logger.getLogger(BillingController.class.getName()).log(Level.SEVERE, null, ex);
-                                } catch (SQLException ex) {
-                                    Logger.getLogger(BillingController.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            });
-                            viewPenaltyBtn.setOnAction(event -> {
-                                Bills selectedBill = getTableView().getItems().get(getIndex());
-                                try {
-                                    viewPenaltyDetails(selectedBill.getBillID());
-                                } catch (IOException ex) {
-                                    Logger.getLogger(BillingController.class.getName()).log(Level.SEVERE, null, ex);
-                                } catch (SQLException ex) {
-                                    Logger.getLogger(BillingController.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            });
-                            printBill.setOnAction(event -> {
-                                Bills selectedBill = getTableView().getItems().get(getIndex());
-                                try {
-                                    printPdfBill = new billPdfGenerator(selectedBill.getBillID());
-                                    
-                                    showBilling();
-                                } catch (DocumentException ex) {
-                                    Logger.getLogger(BillingController.class.getName()).log(Level.SEVERE, null, ex);
-                                } catch (IOException ex) {
-                                    Logger.getLogger(BillingController.class.getName()).log(Level.SEVERE, null, ex);
-                                } catch (SQLException ex) {
-                                    Logger.getLogger(BillingController.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            });
-                        }
-
-                    @Override
-                    protected void updateItem(Integer item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setGraphic(null);
-                        setText(null);
-                    } else {
-                        Bills selectedBill = getTableView().getItems().get(getIndex());
-                        try {
-                            if(billsModel.checkPaymentStatus(selectedBill.getBillID())){
-                                payBillBtn.setDisable(true);
-                            }else{
-                                payBillBtn.setDisable(false);
-                                
-                            }
-//                            if(billsModel.viewPenaltyDetails(selectedBill.getBillID()) == null){
-//                                viewPenaltyBtn.setDisable(true);
-//                            }
-                            if(billsModel.checkInvoice(selectedBill.getBillID())){
-                                printBill.setDisable(true);
-                            }else{
-                                printBill.setDisable(false);
-                                
-                            }
-                        } catch (SQLException ex) {
-                            Logger.getLogger(BillingController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        
-                        HBox buttonsBox = new HBox(2, sendNoticeBtn, payBillBtn, viewBillDetailsBtn,viewPenaltyBtn,printBill);
-                        buttonsBox.setAlignment(Pos.CENTER);
-                       
-                        setGraphic(buttonsBox);
-                        setText(null);
-                    }
-                }
-
-                };
-            }
-        });   
+        }); 
         actionCol.setCellFactory(new Callback<>() {
             @Override
             public TableCell<Bills, Integer> call(TableColumn<Bills, Integer> param) {
@@ -362,7 +251,8 @@ public class BillingController implements Initializable {
                         printBillItem = createMenuItem("Print Bill", "/assets/icons/print.png");
 
 
-                        ContextMenu contextMenu = new ContextMenu(sendNoticeItem, payBillItem, viewBillDetailsItem, viewPenaltyItem, printBillItem);
+                        //ContextMenu contextMenu = new ContextMenu(sendNoticeItem, payBillItem, viewBillDetailsItem, viewPenaltyItem, printBillItem);
+ContextMenu contextMenu = new ContextMenu(sendNoticeItem, payBillItem, printBillItem);
 
                         // Change the icon of the Button
                         actionButton.setGraphic(loadSvgIcon("/assets/icons/action.png")); // Replace with the path to your new icon

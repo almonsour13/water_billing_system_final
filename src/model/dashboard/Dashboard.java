@@ -23,12 +23,17 @@ public class Dashboard {
     private LocalDate billDate;
     private Double totalAmount;
     private String status;
+    private int totConsumer;
     
     public Dashboard(int month, Double paymentAmount) {
         this.month = month;
         this.paymentAmount = paymentAmount;
     }
 
+    public Dashboard(int totConsumer) {
+        this.totConsumer = totConsumer;
+    }
+    
     public Dashboard(int unpaid, int paid, int overdue, int totalBills) {
         this.unpaid = unpaid;
         this.overdue = overdue;
