@@ -45,7 +45,6 @@ public class generateReceipt {
     }
     public generateReceipt(int id) throws DocumentException, IOException, SQLException {
         Payment payment =  paymentModel.getPaymentsDetailsById(id);
-        Bills bill = billModel.getConsumerBillDetails(id);
         System.out.println(payment+"   "+id);
         if (payment != null) {
             generatePdf(payment);
@@ -57,7 +56,7 @@ public class generateReceipt {
         systemLogsModel.insertLog(logAccount.getAccount(), "Generated Receipt ID: " + receiptID + " for Bill ID: " + payment.getBillID() + ", consumer (" + payment.getName() + ")");
         Penalty penalty = penaltyModel.getPenaltyDetailsById(payment.getPaymentID()); 
         Bills bill = billModel.getConsumerBillDetails(payment.getBillID());
-        System.out.println(bill);
+        System.out.println(bill+"  "+payment.getBillID());
         Settings settings = settingsModel.getComInfo();
 
         String companyName = settings.getCompanyName();
@@ -148,6 +147,7 @@ public class generateReceipt {
         // Add payment information
         document.add(new Paragraph("Payment Amount: " +String.valueOf(payment.getPaymentAmount())));  // Add payment date
         document.add(new Paragraph("Changes: " +String.valueOf(payment.getPaymentAmount()-totalAmount)));  // Add payment date
+        document.add(new Paragraph("Status: " +payment.getStatus()));  // Add payment date
         document.add(new Paragraph("Payment Received on: " + new Date()));  // Add payment date
         document.add(new Paragraph("Payment method: Cash"));  // Add payment method
 

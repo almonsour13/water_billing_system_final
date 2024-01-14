@@ -257,6 +257,7 @@ public class PaymentController implements Initializable {
                                 Payment payment =  getTableView().getItems().get(getIndex());
                                 try {
                                     generateReceipt = new generateReceipt(payment.getPaymentID());
+                                    showPayments();
                                 } catch (DocumentException ex) {
                                     Logger.getLogger(PaymentController.class.getName()).log(Level.SEVERE, null, ex);
                                 } catch (IOException ex) {
@@ -274,6 +275,14 @@ public class PaymentController implements Initializable {
                         setGraphic(null);
                         setText(null);
                     } else {
+                        Payment payment =  getTableView().getItems().get(getIndex());
+                        try {
+                            if(paymentModel.checkReceipt(payment.getPaymentID()) == true){
+                                printReceipt.setDisable(true);
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(PaymentController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         HBox buttonsBox = new HBox(5, printReceipt);
                         buttonsBox.setAlignment(Pos.CENTER);
                        

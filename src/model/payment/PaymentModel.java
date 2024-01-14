@@ -244,4 +244,31 @@ public class PaymentModel {
 
         return receiptID;
     }
+    public boolean checkReceipt(int paymentID) throws SQLException{
+        try (Connection connection = dbConfig.getConnection()) {
+            connection.setAutoCommit(false);
+                String query =  "SELECT\n" +
+                                "    p.paymentID \n" +
+                                "FROM\n" +
+                                "	receipt p \n" +
+                                "WHERE\n" +
+                                "	paymentID = ?;";
+                
+            // Check if the bill already exists
+            try (PreparedStatement checkBillStatement = connection.prepareStatement(query)) {
+                checkBillStatement.setInt(1, paymentID);
+
+                ResultSet checkBillResults = checkBillStatement.executeQuery();
+
+                if (checkBillResults.next()) {
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }        
+    }   
 }

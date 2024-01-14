@@ -245,40 +245,37 @@ public class BillsModel {
     public Bills getConsumerBillDetails(int billID) throws SQLException {
         Bills bill = null;
         String query = "SELECT\n" +
-                        "	c.cID,\n" +
-                        "    b.billID,\n" +
-                        "    mr.meterReadingID,\n" +
-                        "    m.meterNumber,\n" +
-                        "    CONCAT(c.cFName, ' ', c.cLName) AS name,\n" +
-                        "    b.billingDate,\n" +
-                        "    b.dueDate,\n" +
-                        "    b.totalAmount,\n" +
-                        "    b.waterConsumption,\n" +
-                        "    b.billingStatus,\n" +
-                        "    mr.readingDate,\n" +
-                        "    mr.previousReading,\n" +
-                        "    mr.currentReading\n" +
-                        "    \n" +
-                        "FROM\n" +
-                        "	conscessionaries c \n" +
-                        "JOIN\n" +
-                        "	consumermeternumber cm ON c.cID = cm.cID\n" +
-                        "JOIN\n" +
-                        "	meter m ON cm.meterID = m.meterID\n" +
-                        "JOIN\n" +
-                        "	meterreading mr ON cm.consumerMeterNumberID = mr.consumerMeterNumberID \n" +
-                        "JOIN\n" +
-                        "	bills b ON b.meterReadingID = mr.meterReadingID \n" +
-                        "LEFT JOIN\n" +
-                        "	penalty p ON b.billID = p.billID WHERE b.billID = ?;";
-
+"    c.cID,\n" +
+"    b.billID,\n" +
+"    mr.meterReadingID,\n" +
+"    m.meterNumber,\n" +
+"    CONCAT(c.cFName, ' ', c.cLName) AS name,\n" +
+"    b.billingDate,\n" +
+"    b.dueDate,\n" +
+"    b.totalAmount,\n" +
+"    b.waterConsumption,\n" +
+"    b.billingStatus,\n" +
+"    mr.readingDate,\n" +
+"    mr.previousReading,\n" +
+"    mr.currentReading\n" +
+"FROM\n" +
+"    conscessionaries c\n" +
+"JOIN\n" +
+"    consumermeternumber cm ON c.cID = cm.cID\n" +
+"JOIN\n" +
+"    meter m ON cm.meterID = m.meterID\n" +
+"JOIN\n" +
+"    meterreading mr ON cm.consumerMeterNumberID = mr.consumerMeterNumberID\n" +
+"JOIN\n" +
+"    bills b ON b.meterReadingID = mr.meterReadingID\n" +
+"WHERE\n" +
+"    b.billID = ?;";
         try (Connection connection = dbConfig.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, billID);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 String status = getBillingStatusLabel(rs.getInt("billingStatus"));
-                if (rs.getInt("billingStatus") != 4) {
                     LocalDate billingDate = (rs.getDate("billingDate") != null) ? rs.getDate("billingDate").toLocalDate() : null;
                     LocalDate dueDate = (rs.getDate("dueDate") != null) ? rs.getDate("dueDate").toLocalDate() : null;
                     LocalDate readingDate = (rs.getDate("readingDate") != null) ? rs.getDate("readingDate").toLocalDate() : null;
@@ -298,7 +295,6 @@ public class BillsModel {
                             rs.getInt("previousReading"),
                             rs.getInt("currentReading")
                     );
-                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
