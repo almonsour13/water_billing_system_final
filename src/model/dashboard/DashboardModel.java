@@ -58,6 +58,13 @@ public class DashboardModel {
         }
         return income;
     } 
+    
+    
+    
+    
+     
+     
+     
     public Dashboard getBillAnalytics() throws SQLException{
       Dashboard bills = null;
         String query =  "SELECT\n" +

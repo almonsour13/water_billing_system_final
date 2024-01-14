@@ -15,12 +15,54 @@ public class Reports {
     private int month;
     private int collected;
     private int notCollected;
-
+    private double paymentCollectionPerMonth;
+    private int year;
+    private int waterConsumptionPerMonth;
+    
     public Reports(LocalDate billingDate, int collected, int notCollected) {
         this.billingDate = billingDate;
         this.collected = collected;
         this.notCollected = notCollected;
     }
+
+    public Reports(int waterConsumtionPerMonth, int month, int year) {
+        this.month = month;
+         this.waterConsumptionPerMonth = waterConsumtionPerMonth;
+        this.year = year;
+       
+    }
+
+    public Reports( double paymentCollectionPerMonth, int month, int year) {
+        this.month = month;
+        this.paymentCollectionPerMonth = paymentCollectionPerMonth;
+        this.year = year;
+    }
+
+    public int getWaterConsumptionPerMonth() {
+        return waterConsumptionPerMonth;
+    }
+
+    public void setWaterConsumptionPerMonth(int waterConsumptionPerMonth) {
+        this.waterConsumptionPerMonth = waterConsumptionPerMonth;
+    }
+     
+
+    public double getPaymentCollectionPerMonth() {
+        return paymentCollectionPerMonth;
+    }
+
+    public void setPaymentCollectionPerMonth(double paymentCollectionPerMonth) {
+        this.paymentCollectionPerMonth = paymentCollectionPerMonth;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+    
 
     public Reports(LocalDate billingDate) {
         this.billingDate = billingDate;

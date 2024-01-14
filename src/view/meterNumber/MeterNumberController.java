@@ -27,6 +27,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -250,10 +252,11 @@ public class MeterNumberController implements Initializable {
             @Override
             public TableCell<MeterNumber, Integer> call(TableColumn<MeterNumber, Integer> param) {
                 return new TableCell<MeterNumber, Integer>() {
-                    final Button viewConHistBtn = new Button("VBH");
+                    final Button viewConHistBtn = new Button();
 
                         {
                             viewConHistBtn.getStyleClass().add("actionBtn");
+                            viewConHistBtn.setGraphic(loadSvgIcon("/assets/icons/view.png"));
                             
                             viewConHistBtn.setOnAction(event -> {
                                 MeterNumber meterNumber = getTableView().getItems().get(getIndex());
@@ -419,5 +422,11 @@ public class MeterNumberController implements Initializable {
     private void search(KeyEvent event) throws SQLException {
         showMeterNumber();
     }
-    
+    private ImageView loadSvgIcon(String path) {
+        Image image = new Image(getClass().getResourceAsStream(path));
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(18); // Set the width as needed
+        imageView.setFitHeight(18); // Set the height as needed
+        return imageView;
+    }
 }

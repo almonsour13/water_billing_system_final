@@ -17,11 +17,13 @@ public class Settings {
     private String companyMunicipality;
     private String companyBaranggay;
     private String companyPurok;
+    private String contactNo;
+    private String emailAd;
     private int settingID;
     private String settingName;
     private String settingValue;
 
-    public Settings(int companyID, String companyName, String companyCountry, String companyRegion, String companyProvince, String companyMunicipality, String companyBaranggay, String companyPurok) {
+    public Settings(int companyID, String companyName, String companyCountry, String companyRegion, String companyProvince, String companyMunicipality, String companyBaranggay, String companyPurok,String contactNo,String emailAd) {
         this.companyID = companyID;
         this.companyName = companyName;
         this.companyCountry = companyCountry;
@@ -30,6 +32,8 @@ public class Settings {
         this.companyMunicipality = companyMunicipality;
         this.companyBaranggay = companyBaranggay;
         this.companyPurok = companyPurok;
+        this.contactNo = contactNo;
+        this.emailAd = emailAd;
     }
 
     public Settings(int settingID, String settingName, String settingValue) {
@@ -41,6 +45,22 @@ public class Settings {
     public Settings(int settingID, String settingValue) {
         this.settingID = settingID;
         this.settingValue = settingValue;
+    }
+
+    public String getContactNo() {
+        return contactNo;
+    }
+
+    public void setContactNo(String contactNo) {
+        this.contactNo = contactNo;
+    }
+
+    public String getEmailAd() {
+        return emailAd;
+    }
+
+    public void setEmailAd(String emailAd) {
+        this.emailAd = emailAd;
     }
     
     

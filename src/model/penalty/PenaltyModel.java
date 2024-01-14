@@ -112,6 +112,48 @@ public class PenaltyModel {
         }
         return penalty;
    }
+   public Penalty getPenaltyDetailsById(int id) throws SQLException{
+       Penalty penalty = null;
+        String query =  "SELECT * FROM get_penalty WHERE billID = '"+id+"';";
+
+        try (Connection connection = dbConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            ResultSet rs = statement.executeQuery();
+            int no = 1;
+            while (rs.next()) {
+                String status = "";
+
+                if (rs.getInt("penaltyStatus") == 1) {
+                    status = "Unpaid";
+                } else {
+                    status = "Paid";
+                }
+                String penaltyType = "";
+                if(rs.getInt("penaltyType") == 1){
+                    penaltyType = "Overdue Penalty";
+                }
+
+                penalty =  new Penalty(
+                        no,
+                        rs.getInt("penaltyID"),
+                        rs.getInt("billID"),
+                        rs.getString("name"),
+                        rs.getString("meterNumber"),
+                        rs.getString("meterLocation"),
+                        rs.getDate("billingDate").toLocalDate(),
+                        rs.getInt("billAmount"),
+                        rs.getDate("penaltyDate").toLocalDate(),
+                        penaltyType,
+                        rs.getInt("penaltyAmount"),
+                        rs.getDouble("totalAmount"),
+                        status
+                 ); 
+                no++;
+            }
+        }
+        return penalty;
+   }
    public ObservableList<Penalty> filterPenalty(int month, int year, String meterLoc,int status, String searchVal) throws SQLException {
         ObservableList<Penalty> penalty = FXCollections.observableArrayList();
 

@@ -495,9 +495,7 @@ public class BillingController implements Initializable {
         monthChoiceBox.setOnAction(this::monthChoice);
         yearChoiceBox.setOnAction(this::yearChoice);
         statusChoiceBox.setOnAction(this::choiceBox); 
-        Parent topmostParent = getTopmostParent(parentContainer);
 
-        System.out.println("Topmost Parent: " + topmostParent);
     }    
     public void showBilling() throws SQLException {
         billTable.getItems().clear();
@@ -642,16 +640,6 @@ public class BillingController implements Initializable {
     public void checkBillingDueDate() throws SQLException{
         billsModel.checkBillingDueDate();
     }
-    private Parent getTopmostParent(Node node) {
-        Parent parent = node.getParent();
-
-        while (parent != null && parent.getParent() != null) {
-            parent = parent.getParent();
-        }
-
-        return parent;
-    }
-
     @FXML
     private void add(ActionEvent event) throws IOException {
     

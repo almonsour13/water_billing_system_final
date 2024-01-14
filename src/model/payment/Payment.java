@@ -12,6 +12,7 @@ import java.time.LocalDate;
  */
 public class Payment {
     private int no;
+    private int paymentID;
     private int billID;
     private String name;
     private LocalDate dueDate;
@@ -26,7 +27,7 @@ public class Payment {
     private int month;
     private Double penaltyAmount;
 
-    public Payment(int no, int billID, String name, LocalDate dueDate, LocalDate paymentDate, Double totalAmount, Double paymentAmount, String status) {
+    public Payment(int no, int paymentID,int billID, String name, LocalDate dueDate, LocalDate paymentDate, Double totalAmount, Double paymentAmount, String status) {
         this.no = no;
         this.billID = billID;
         this.name = name;
@@ -37,8 +38,9 @@ public class Payment {
         this.status = status;
     }
 
-    public Payment(int no, int billID, String name, LocalDate dueDate, LocalDate paymentDate, Double totalAmount, Double penaltyAmount, Double paymentAmount, String status, String meterNumber, String meterLocation) {
+    public Payment(int no,int paymentID, int billID, String name, LocalDate dueDate, LocalDate paymentDate, Double totalAmount, Double penaltyAmount, Double paymentAmount, String status, String meterNumber, String meterLocation) {
         this.no = no;
+        this.paymentID = paymentID;
         this.billID = billID;
         this.name = name;
         this.dueDate = dueDate;
@@ -51,6 +53,14 @@ public class Payment {
         this.meterLocation = meterLocation;
     }
 
+    public int getPaymentID() {
+        return paymentID;
+    }
+
+    public void setPaymentID(int paymentID) {
+        this.paymentID = paymentID;
+    }
+    
     public double getPenaltyAmount() {
         return penaltyAmount;
     }

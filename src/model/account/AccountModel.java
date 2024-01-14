@@ -30,7 +30,7 @@ public class AccountModel {
         ObservableList<Account> accounts = FXCollections.observableArrayList();
         try (Connection connection = dbConfig.getConnection();
              Statement statement = connection.createStatement()) {
-            String query = "SELECT aID, aFName, aMName, aLName, aSuffix, aUserName, aPassWord, aType, aStatus FROM accounts;";
+            String query = "SELECT aID, aFName, aMName, aLName, aSuffix, aUserName, aPassWord, aType, aStatus,aDateAdded FROM accounts;";
             ResultSet rs = statement.executeQuery(query);
             int no = 1;
             while (rs.next()) {
@@ -52,7 +52,7 @@ public class AccountModel {
                             rs.getInt("aID"), rs.getString("aFName"), 
                             rs.getString("aMName"), rs.getString("aLName"), 
                             rs.getString("aUserName"), rs.getString("aPassWord"),
-                            accountType, status
+                            accountType, status,rs.getDate("aDateAdded").toLocalDate()
                                 )
                             );
                     
@@ -66,12 +66,85 @@ public class AccountModel {
         return accounts;
         
     }
+    
+     public ObservableList<Account> filterAccounts(String searchVal, int role, int status, int month, int year) throws SQLException{
+        ObservableList<Account> accounts = FXCollections.observableArrayList();
+        String query = "SELECT "
+            + "aID, "
+            + "aFName, "
+            + "aMName, "
+            + "aLName, "
+            + "aSuffix, "
+            + "aUserName, "
+            + "aPassWord, "
+            + "aType, "
+            + "aDateAdded, "
+            + "aStatus FROM accounts "
+            + (month != 0 || year != 0 || status != 0 || role != 0 || (searchVal != null && !searchVal.isEmpty()) ? "WHERE " : "") +  
+            (month != 0 ? "MONTH(aDateAdded) = ? " : "") +
+            (year != 0 ? (month != 0 ? "AND " : "") + "YEAR(aDateAdded) = ? " : "") +
+            (status != 0 ? (month != 0 || year != 0 ? "AND " : "") + "aStatus = ? " : "") +
+            (role != 0 ? (month != 0 || year != 0 || status != 0 ? "AND " : "") + "aType = ? " : "") +
+            (searchVal != null && !searchVal.isEmpty() ? (month != 0 || year != 0 || status != 0 || role != 0 ? "AND " : "") +
+                    "UPPER(aFName) LIKE ? OR UPPER(aMName) LIKE ? OR UPPER(aLName) LIKE ? " : "") +
+            ";";
+
+        
+        try (Connection connection = dbConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            int parameterIndex = 1;
+            if (month != 0) statement.setInt(parameterIndex++, month);
+            if (year != 0) statement.setInt(parameterIndex++, year);
+            if (status != 0) statement.setInt(parameterIndex++, status); 
+            if (role != 0) statement.setInt(parameterIndex++, role);  // Assuming status corresponds to mchStatus
+            if (searchVal != null && !searchVal.isEmpty()) {
+                String likePattern = "%" + searchVal + "%";
+                statement.setString(parameterIndex++, likePattern);
+                statement.setString(parameterIndex++, likePattern);
+                statement.setString(parameterIndex++, likePattern);
+            }
+            
+            ResultSet rs = statement.executeQuery();
+            int no = 1;
+            while (rs.next()) {
+                String aStatus = "";
+                if(rs.getInt("aStatus")== 1){
+                   aStatus = "Active";
+                }else if(rs.getInt("aStatus")== 2){
+                   aStatus = "Inactive";
+                }
+                String accountType = "";
+                if(rs.getInt("aType") == 1){
+                    accountType = "Admin";
+                }else if(rs.getInt("aType") == 2){
+                    accountType = "Collector";
+                }
+                if(rs.getInt("aStatus")!= 3){
+                    accounts.add(
+                     new Account(no,
+                            rs.getInt("aID"), rs.getString("aFName"), 
+                            rs.getString("aMName"), rs.getString("aLName"), 
+                            rs.getString("aUserName"), rs.getString("aPassWord"),
+                            accountType, aStatus,rs.getDate("aDateAdded").toLocalDate()
+                                )
+                            );
+                    
+                    no++;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Re-throw the exception
+        }
+        return accounts;
+        
+    }    
     public void addAccount(String fName, String mName, String lName, String uName, String pWord, int role, int status) throws SQLException {      
         try (Connection connection = dbConfig.getConnection()) {
             connection.setAutoCommit(false);
 
             // Insert data into the Account table
-            String insertAccountSQL = "INSERT INTO accounts (aFName, aMName, aLName, aUserName, aPassWord, aType, aStatus, aSuffix) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)";
+            String insertAccountSQL = "INSERT INTO accounts (aFName, aMName, aLName, aUserName, aPassWord, aType, aStatus, aSuffix,aDateAdded) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?,CURRENT_DATE)";
             try (PreparedStatement accountStatement = connection.prepareStatement(insertAccountSQL, Statement.RETURN_GENERATED_KEYS)) {
                
                 accountStatement.setString(1, fName);
@@ -160,5 +233,5 @@ public class AccountModel {
 
         return account;
     }
-
+    
 }

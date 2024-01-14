@@ -1,131 +1,164 @@
+package controller.billPDFGenenerator;
+
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
+import static com.itextpdf.text.Font.BOLD;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-
+import controller.accountLoggedSetter.LoggedAccountSetter;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import model.bills.Bills;
+import model.bills.BillsModel;
+import model.meterReading.MeterReadingModel;
+import model.payment.Payment;
+import model.payment.PaymentModel;
+import model.penalty.Penalty;
+import model.penalty.PenaltyModel;
+import view.settings.Settings;
+import view.settings.SettingsModel;
+import view.settings.settingPages.SystemLogsModel;
 
-public class generateReceipt {
-    public void generate(){
-        createReceiptPDF("John Doe", "123 Main St", "A123456789", 1000, 1200, 0.25, 30,
-                "Credit Card", "TX123456", "Jane Smith", "2024-02-01", 0.05);
+public class generateReceipt {    
+    private BillsModel billModel = new BillsModel();
+    private LoggedAccountSetter logAccount = new LoggedAccountSetter();
+    private SystemLogsModel systemLogsModel = new SystemLogsModel();
+    private SettingsModel settingsModel = new SettingsModel();
+    private MeterReadingModel meterReadingModel = new MeterReadingModel();
+    private PenaltyModel penaltyModel = new PenaltyModel();
+    private PaymentModel paymentModel = new PaymentModel();
+    
+    public generateReceipt(){
+        
     }
-    public static void createReceiptPDF(String customerName, String customerAddress, String accountNumber,
-                                       int previousReading, int currentReading, double rate, int taxRate,
-                                       String paymentMethod, String transactionID, String generatedBy,
-                                       String penaltyDate, double penaltyChargePercentage) {
+    public generateReceipt(int id) throws DocumentException, IOException, SQLException {
+        Payment payment =  paymentModel.getPaymentsDetailsById(id);
+        Bills bill = billModel.getConsumerBillDetails(id);
+        System.out.println(payment+"   "+id);
+        if (payment != null) {
+            generatePdf(payment);
+        }
+    }
+
+    public void generatePdf(Payment payment) throws FileNotFoundException, DocumentException, IOException, SQLException {
+        int receiptID = paymentModel.insertReceipt(payment.getPaymentID()); // Assuming receipt ID is used
+        systemLogsModel.insertLog(logAccount.getAccount(), "Generated Receipt ID: " + receiptID + " for Bill ID: " + payment.getBillID() + ", consumer (" + payment.getName() + ")");
+        Penalty penalty = penaltyModel.getPenaltyDetailsById(payment.getPaymentID()); 
+        Bills bill = billModel.getConsumerBillDetails(payment.getBillID());
+        System.out.println(bill);
+        Settings settings = settingsModel.getComInfo();
+
+        String companyName = settings.getCompanyName();
+        String companyAddress = settings.getCompanyPurok() + ", " + settings.getCompanyBaranggay() + ", " + settings.getCompanyMunicipality() + ", " + settings.getCompanyProvince();
+        String companyPhone = settings.getContactNo();
+        String companyEmail = settings.getEmailAd();
+
+        String customerName = payment.getName();
+        String customerAddress = "" + settings.getCompanyBaranggay() + ", " + settings.getCompanyMunicipality() + ", " + settings.getCompanyProvince();
+        String meterNumber = payment.getMeterNumber();
+
+        String billingPeriod = String.valueOf(bill.getBillingDate());
+        String currentMeterReading = String.valueOf(bill.getCurReading());
+        String previousMeterReading = String.valueOf(bill.getPrevReading());
+        double waterRate = meterReadingModel.getRate();
+
+        int waterUsage = bill.getCurReading() - bill.getPrevReading();
+        double totalAmount = waterUsage * waterRate;
 
         Document document = new Document();
+        OutputStream outputStream = new FileOutputStream("invoices/Receipts/" + receiptID + ".pdf");
+        PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+        document.open();
 
-        try {
-            PdfWriter.getInstance(document, new FileOutputStream("WaterBillReceipt.pdf"));
-            document.open();
+        Image logo = Image.getInstance("src/assets/logo.png");
+        logo.scalePercent(10f);
+        logo.setAlignment(Image.ALIGN_CENTER);
+        document.add(logo);
 
-            // Add content to the PDF
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("        Water Utility Company", getBoldFont()));
-            document.add(new Paragraph("      123 Water Street | City, State, ZIP"));
-            document.add(new Paragraph("     Phone: (123) 456-7890 | Email: info@waterutility.com"));
+        Paragraph companyName1 = new Paragraph(companyName);
+        companyName1.setAlignment(companyName1.ALIGN_CENTER);
+        document.add(companyName1);
 
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("            WATER BILL RECEIPT", getBoldFont()));
+        Paragraph companyAddress1 = new Paragraph(companyAddress);
+        companyAddress1.setAlignment(companyAddress1.ALIGN_CENTER);
+        document.add(companyAddress1);
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-            String currentDate = dateFormat.format(new Date());
+        Paragraph companyContacts = new Paragraph(companyPhone + " || " + companyEmail);
+        companyContacts.setAlignment(companyContacts.ALIGN_CENTER);
+        document.add(companyContacts);
 
-            document.add(new Paragraph("Date: " + currentDate));
-            document.add(new Paragraph("Receipt #: " + generateReceiptNumber()));
+        Paragraph receiptDetails = new Paragraph("Receipt Number: " + receiptID, FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+        receiptDetails.add("\nReceipt Date: " + new Date());
+        document.add(receiptDetails);
 
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("        CUSTOMER INFORMATION", getBoldFont()));
-            document.add(new Paragraph("Name: " + customerName));
-            document.add(new Paragraph("Address: " + customerAddress));
-            document.add(new Paragraph("Account Number: " + accountNumber));
+        // Customer Information
+        Paragraph customerInfo = new Paragraph("Payer:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+        document.add(customerInfo);
+        customerInfo = new Paragraph(customerName + "\n" + customerAddress + "\n" + "Meter Number: " + meterNumber);
+        document.add(customerInfo);
 
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("         BILLING DETAILS", getBoldFont()));
-            document.add(new Paragraph("Meter Reading (Previous): " + previousReading));
-            document.add(new Paragraph("Meter Reading (Current): " + currentReading));
-            document.add(new Paragraph("Usage: " + (currentReading - previousReading) + " Gallons"));
-            document.add(new Paragraph("Rate: $" + rate + " per Gallon"));
+        // Billing Period
+        Paragraph billingPeriodSection = new Paragraph("Billing Period:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+        billingPeriodSection.add(new Phrase(billingPeriod));
+        document.add(billingPeriodSection);
 
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("       WATER USAGE CHARGES", getBoldFont()));
-            double totalUsageCharges = (currentReading - previousReading) * rate;
-            document.add(new Paragraph("Usage Charges: $" + totalUsageCharges));
+        // Meter Readings and Usage
+        Paragraph prevReading = new Paragraph("Previous Reading:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+        prevReading.add(new Phrase(previousMeterReading, FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        document.add(prevReading);
 
-            // Add Penalty Section based on Penalty Date
-            double penaltyAmount = calculatePenalty(totalUsageCharges, penaltyDate, penaltyChargePercentage);
-            if (penaltyAmount > 0) {
-                document.add(new Paragraph("----------------------------------------"));
-                document.add(new Paragraph("              PENALTY", getBoldFont()));
-                document.add(new Paragraph("Penalty Amount: $" + penaltyAmount));
-            }
+        Paragraph curReading = new Paragraph("Current Reading:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+        curReading.add(new Phrase(currentMeterReading, FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        document.add(curReading);
 
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("       SUBTOTAL:          $" + totalUsageCharges));
-            double taxAmount = (taxRate / 100.0) * totalUsageCharges;
-            document.add(new Paragraph("       TAX (" + taxRate + "%):          $" + taxAmount));
+        Paragraph waterCon = new Paragraph("Water Consumption:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+        waterCon.add(new Phrase(String.valueOf(waterUsage), FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        document.add(waterCon);
 
-            // Include penalty in the total amount
-            double totalAmount = totalUsageCharges + taxAmount + penaltyAmount;
-            document.add(new Paragraph("       TOTAL AMOUNT:      $" + totalAmount));
+        int penaltyAmount = 0;
+        if (penalty != null) {
+            Paragraph pAmount = new Paragraph("Penalty Charges:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+            pAmount.add(new Phrase(String.valueOf( penalty.getPamount()), FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            document.add(pAmount);
 
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("        PAYMENT DETAILS", getBoldFont()));
-            document.add(new Paragraph("Payment Method: " + paymentMethod));
-            document.add(new Paragraph("Transaction ID: " + transactionID));
+            penaltyAmount = penalty.getPamount();
 
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("      THANK YOU FOR YOUR PAYMENT!", getBoldFont()));
-
-            document.add(new Paragraph("   For any inquiries, please contact:"));
-            document.add(new Paragraph("   Customer Support Phone/Email"));
-
-            document.add(new Paragraph("----------------------------------------"));
-
-            // Added the name of the person generating the receipt
-            document.add(new Paragraph("Generated by: " + generatedBy));
-
-            document.close();
-            System.out.println("Receipt created successfully!");
-
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static String generateReceiptNumber() {
-        // You may implement your own logic to generate a unique receipt number
-        return "RCT" + System.currentTimeMillis();
-    }
-
-    private static double calculatePenalty(double totalUsageCharges, String penaltyDate, double penaltyChargePercentage) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date currentDate = dateFormat.parse(dateFormat.format(new Date()));
-            Date penaltyDateParsed = dateFormat.parse(penaltyDate);
-
-            if (currentDate.after(penaltyDateParsed)) {
-                // Apply penalty charge if the current date is after the penalty date
-                return totalUsageCharges * penaltyChargePercentage;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            Paragraph penaltyDate = new Paragraph("Penalty Date:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+            penaltyDate.add(new Phrase(String.format("P%d", penalty.getPdate()), FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            document.add(penaltyDate);
+            totalAmount += totalAmount + penaltyAmount;
         }
 
-        return 0;
-    }
+        Paragraph totalAmountSection = new Paragraph("Total Amount Paid:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+        totalAmountSection.add(new Phrase(String.format("P%.2f", totalAmount ), FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD)));
+        document.add(totalAmountSection);
 
-    private static Font getBoldFont() throws Exception {
-        // Using a base font that supports bold
-        BaseFont baseFont = BaseFont.createFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
-        return new Font(baseFont, 12);
+        // Add payment information
+        document.add(new Paragraph("Payment Amount: " +String.valueOf(payment.getPaymentAmount())));  // Add payment date
+        document.add(new Paragraph("Changes: " +String.valueOf(payment.getPaymentAmount()-totalAmount)));  // Add payment date
+        document.add(new Paragraph("Payment Received on: " + new Date()));  // Add payment date
+        document.add(new Paragraph("Payment method: Cash"));  // Add payment method
+
+        // Close the document
+        document.close();
+        outputStream.close();
+        System.out.println("Payment receipt generated successfully!");
+        try {
+            Desktop.getDesktop().open(new File("invoices/Receipts/" + receiptID + ".pdf"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }   
     }
 }

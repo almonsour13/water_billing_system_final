@@ -78,10 +78,30 @@
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Label text="purok" />
+                        <Label text="Purok:" />
                      </children>
                   </HBox>
                   <TextField fx:id="purok" disable="true" onKeyReleased="#typeEvent" prefHeight="27.0" prefWidth="203.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="461.0">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Label text="Contanct Number:" />
+                     </children>
+                  </HBox>
+                  <TextField fx:id="contactNo" disable="true" onKeyReleased="#typeEvent" prefHeight="27.0" prefWidth="203.0" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="461.0">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Label text="Email Address:" />
+                     </children>
+                  </HBox>
+                  <TextField fx:id="emailAd" disable="true" onKeyReleased="#typeEvent" prefHeight="27.0" prefWidth="203.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="461.0">

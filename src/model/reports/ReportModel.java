@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.DbConfig;
+import model.dashboard.Dashboard;
 
 /**
  *
@@ -50,7 +51,73 @@ public class ReportModel {
         }
         return bill;  
     }
+    
+    public ObservableList<Reports> getPaymentIncomes(int year) throws SQLException {
+        ObservableList<Reports> reports = FXCollections.observableArrayList();
+        String query = "SELECT\n" +
+                "SUM(paymentAmount) AS paymentCollectionsPerMonth,\n" +
+                "MONTH(paymentDate) AS month,\n" +
+                "YEAR(paymentDate) AS year\n" +
+                "FROM\n" +
+                " payment p " + (year != 0 ? "WHERE YEAR(paymentDate) = ?" : "") +
+                " GROUP BY\n" +
+                "month\n" +
+                "ORDER BY\n" +
+                " paymentDate";
 
+        try (Connection connection = dbConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            if (year != 0) {
+                statement.setInt(1, year);
+            }
+
+            ResultSet rs = statement.executeQuery();
+            int no = 1;
+            while (rs.next()) {
+                reports.add(new Reports(
+                        doubleFormatter(rs.getDouble("paymentCollectionsPerMonth")),
+                        rs.getInt("month"),
+                        rs.getInt("year")
+                ));
+                no++;
+            }
+        }
+        return reports;
+    }
+    public ObservableList<Reports> getWaterConsumption(int year) throws SQLException {
+        ObservableList<Reports> consumption = FXCollections.observableArrayList();
+        String query = "SELECT \n" +
+                "    SUM(currentReading - previousReading) AS waterConsumptionPerMonth,\n" +
+                "    MONTH(readingDate) AS month,\n" +
+                "    YEAR(readingDate) AS year\n" +
+                "FROM\n" +
+                "    meterreading m \n" +
+                "WHERE\n" +
+                "    currentReading != 0 " + (year != 0 ? "AND YEAR(readingDate) = ? " : "") +
+                "GROUP BY\n" +
+                "    month\n" +
+                "ORDER BY\n" +
+                "    readingDate;";
+
+        try (Connection connection = dbConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            if (year != 0) {
+                statement.setInt(1, year);
+            }
+
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                consumption.add(new Reports(
+                        rs.getInt("waterConsumptionPerMonth"),
+                        rs.getInt("month"),
+                        rs.getInt("year")
+                ));
+            }
+        }
+        return consumption;
+    }
+
+     
     public ObservableList<Reports> getAll() throws SQLException{
         ObservableList bill = FXCollections.observableArrayList();
         String query =  "SELECT\n" +
@@ -73,5 +140,9 @@ public class ReportModel {
             }
         }
         return bill;
+    }
+     public Double doubleFormatter(double value){
+        String formatted = String.format("%.2f", value*250);
+        return Double.parseDouble(formatted);
     }
 }

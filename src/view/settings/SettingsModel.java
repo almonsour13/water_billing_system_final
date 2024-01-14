@@ -35,7 +35,9 @@ public class SettingsModel {
                             "    c.companyProvince,\n" +
                             "    c.companyMunicipality,\n" +
                             "    c.companyBaranggay,\n" +
-                            "    c.companyPurok\n" +
+                            "    c.companyPurok,\n" +
+                            "    c.companyContactNo,\n" +
+                            "    c.companyEmailAd\n" +
                             "FROM\n" +
                             "	companyinformationsetting c\n" +
                             "WHERE companyID = 1;";
@@ -49,7 +51,9 @@ public class SettingsModel {
                            rs.getString("companyProvince"),
                            rs.getString("companyMunicipality"),
                            rs.getString("companyBaranggay"),
-                           rs.getString("companyPurok")
+                           rs.getString("companyPurok"),
+                           rs.getString("companyContactNo"),
+                           rs.getString("companyEmailAd")
                    ); 
             }
         } catch (SQLException e) {
@@ -71,7 +75,9 @@ public class SettingsModel {
                                         "    companyProvince = ?,\n" +
                                         "    companyMunicipality = ?,\n" +
                                         "    companyBaranggay = ?,\n" +
-                                        "    companyPurok = ?\n" +
+                                        "    companyPurok = ?,\n" +
+                                        "    companyContactNo = ?,\n" +
+                                        "    companyEmailAd = ?\n" +
                                         "WHERE companyID = ?;";
 
             try (PreparedStatement updateStatement = connection.prepareStatement(updateConsumerSQL)) {
@@ -82,7 +88,9 @@ public class SettingsModel {
                 updateStatement.setString(5, settings.getCompanyMunicipality());
                 updateStatement.setString(6, settings.getCompanyBaranggay());
                 updateStatement.setString(7, settings.getCompanyPurok());
-                updateStatement.setInt(8, settings.getCompanyID());
+                updateStatement.setString(8, settings.getContactNo());
+                updateStatement.setString(9, settings.getEmailAd());
+                updateStatement.setInt(10, settings.getCompanyID());
 
                 updateStatement.executeUpdate();
             }

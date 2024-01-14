@@ -10,6 +10,7 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
+import controller.billPDFGenenerator.generateReceipt;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -39,6 +40,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -94,6 +97,7 @@ public class PaymentController implements Initializable {
     private TableColumn<Payment, Integer> billAmountCol;
     @FXML
     private TextField search;
+    private generateReceipt generateReceipt = new generateReceipt();
     /**
      * Initializes the controller class.
      */
@@ -243,14 +247,23 @@ public class PaymentController implements Initializable {
             @Override
             public TableCell<Payment, Integer> call(TableColumn<Payment, Integer> param) {
                 return new TableCell<Payment, Integer>() {
-                    final Button printReceipt = new Button("PD");
+                    final Button printReceipt = new Button();
 
                         {
                             printReceipt.getStyleClass().add("actionBtn");
+                            printReceipt.setGraphic(loadSvgIcon("/assets/icons/print.png"));
 
                             printReceipt.setOnAction(event -> {
-                                createReceiptPDF("John Doe", "123 Main St", "A123456789", 1000, 1200, 0.25, 30,
-                "Credit Card", "TX123456", "Jane Smith", "2024-02-01", 0.05);
+                                Payment payment =  getTableView().getItems().get(getIndex());
+                                try {
+                                    generateReceipt = new generateReceipt(payment.getPaymentID());
+                                } catch (DocumentException ex) {
+                                    Logger.getLogger(PaymentController.class.getName()).log(Level.SEVERE, null, ex);
+                                } catch (IOException ex) {
+                                    Logger.getLogger(PaymentController.class.getName()).log(Level.SEVERE, null, ex);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(PaymentController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
                             });
                         }
 
@@ -261,7 +274,6 @@ public class PaymentController implements Initializable {
                         setGraphic(null);
                         setText(null);
                     } else {
-                        
                         HBox buttonsBox = new HBox(5, printReceipt);
                         buttonsBox.setAlignment(Pos.CENTER);
                        
@@ -278,7 +290,14 @@ public class PaymentController implements Initializable {
         meterLocChoiceBox.setOnAction(this::choiceBox); 
         statusChoiceBox.setOnAction(this::choiceBox); 
         
-    }    
+    } 
+    private ImageView loadSvgIcon(String path) {
+        Image image = new Image(getClass().getResourceAsStream(path));
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(18); // Set the width as needed
+        imageView.setFitHeight(18); // Set the height as needed
+        return imageView;
+    }
     public void choiceBox(ActionEvent event){
         try {
             showPayments();
@@ -373,92 +392,6 @@ public class PaymentController implements Initializable {
     @FXML
     private void search(KeyEvent event) throws SQLException {
         showPayments();
-    }
-    public static void createReceiptPDF(String customerName, String customerAddress, String accountNumber,
-                                       int previousReading, int currentReading, double rate, int taxRate,
-                                       String paymentMethod, String transactionID, String generatedBy,
-                                       String penaltyDate, double penaltyChargePercentage) {
-
-        Document document = new Document();
-
-        try {
-            PdfWriter.getInstance(document, new FileOutputStream("WaterBillReceipt.pdf"));
-            document.open();
-
-            // Add content to the PDF
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("        Water Utility Company", getBoldFont()));
-            document.add(new Paragraph("      123 Water Street | City, State, ZIP"));
-            document.add(new Paragraph("     Phone: (123) 456-7890 | Email: info@waterutility.com"));
-
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("            WATER BILL RECEIPT", getBoldFont()));
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-            String currentDate = dateFormat.format(new java.util.Date());
-
-            document.add(new Paragraph("Date: " + currentDate));
-            document.add(new Paragraph("Receipt #: " + generateReceiptNumber()));
-
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("        CUSTOMER INFORMATION", getBoldFont()));
-            document.add(new Paragraph("Name: " + customerName));
-            document.add(new Paragraph("Address: " + customerAddress));
-            document.add(new Paragraph("Account Number: " + accountNumber));
-
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("         BILLING DETAILS", getBoldFont()));
-            document.add(new Paragraph("Meter Reading (Previous): " + previousReading));
-            document.add(new Paragraph("Meter Reading (Current): " + currentReading));
-            document.add(new Paragraph("Usage: " + (currentReading - previousReading) + " Gallons"));
-            document.add(new Paragraph("Rate: $" + rate + " per Gallon"));
-
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("       WATER USAGE CHARGES", getBoldFont()));
-            double totalUsageCharges = (currentReading - previousReading) * rate;
-            document.add(new Paragraph("Usage Charges: $" + totalUsageCharges));
-
-            // Add Penalty Section based on Penalty Date
-            double penaltyAmount = calculatePenalty(totalUsageCharges, penaltyDate, penaltyChargePercentage);
-            if (penaltyAmount > 0) {
-                document.add(new Paragraph("----------------------------------------"));
-                document.add(new Paragraph("              PENALTY", getBoldFont()));
-                document.add(new Paragraph("Penalty Amount: $" + penaltyAmount));
-            }
-
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("       SUBTOTAL:          $" + totalUsageCharges));
-            double taxAmount = (taxRate / 100.0) * totalUsageCharges;
-            document.add(new Paragraph("       TAX (" + taxRate + "%):          $" + taxAmount));
-
-            // Include penalty in the total amount
-            double totalAmount = totalUsageCharges + taxAmount + penaltyAmount;
-            document.add(new Paragraph("       TOTAL AMOUNT:      $" + totalAmount));
-
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("        PAYMENT DETAILS", getBoldFont()));
-            document.add(new Paragraph("Payment Method: " + paymentMethod));
-            document.add(new Paragraph("Transaction ID: " + transactionID));
-
-            document.add(new Paragraph("----------------------------------------"));
-            document.add(new Paragraph("      THANK YOU FOR YOUR PAYMENT!", getBoldFont()));
-
-            document.add(new Paragraph("   For any inquiries, please contact:"));
-            document.add(new Paragraph("   Customer Support Phone/Email"));
-
-            document.add(new Paragraph("----------------------------------------"));
-
-            // Added the name of the person generating the receipt
-            document.add(new Paragraph("Generated by: " + generatedBy));
-
-            document.close();
-            System.out.println("Receipt created successfully!");
-
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private static String generateReceiptNumber() {

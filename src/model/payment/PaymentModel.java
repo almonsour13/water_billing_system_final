@@ -43,6 +43,7 @@ public class PaymentModel {
                 if (rs.getInt("paymentStatus") != 0) {
                     payments.add(new Payment(
                             no,
+                            rs.getInt("paymentID"),
                             rs.getInt("billID"),
                             rs.getString("name"),
                             rs.getDate("dueDate").toLocalDate(),
@@ -108,6 +109,7 @@ public class PaymentModel {
                 if (rs.getInt("paymentStatus") != 0) {
                     payments.add(new Payment(
                             no,
+                            rs.getInt("paymentID"),
                             rs.getInt("billID"),
                             rs.getString("name"),
                             rs.getDate("dueDate").toLocalDate(),
@@ -147,13 +149,14 @@ public class PaymentModel {
                 if (rs.getInt("paymentStatus") != 0) {
                     payments.add(new Payment(
                             no,
+                            rs.getInt("paymentID"),
                             rs.getInt("billID"),
                             rs.getString("name"),
                             rs.getDate("dueDate").toLocalDate(),
                             rs.getDate("paymentDate").toLocalDate(),
-                            rs.getDouble("totalAmount"),
+                            doubleFormatter(rs.getDouble("totalAmount")),
                             rs.getDouble("penaltyAmount"),
-                            rs.getDouble("paymentAmount"),
+                            doubleFormatter(rs.getDouble("paymentAmount")),
                             status,
                             rs.getString("meterNumber"),
                             rs.getString("meterLocation")
@@ -168,8 +171,77 @@ public class PaymentModel {
         }
         return payments;
     }
+    public Payment getPaymentsDetailsById(int paymentID) throws SQLException {
+        Payment payments =null;
+            String query = "SELECT * FROM get_payment " +
+                    "WHERE paymentStatus != 0 AND paymentID = ?;";
+        try (Connection connection = dbConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, paymentID);
+            ResultSet rs = statement.executeQuery();
+            int no = 1;
+            while (rs.next()) {
+                String status = "";
+                if (rs.getInt("paymentStatus") == 1) {
+                    status = "paid";
+                } else if (rs.getInt("paymentStatus") == 2) {
+                    status = "Paid with penalty";
+                }
+                if (rs.getInt("paymentStatus") != 0) {
+                    payments = new Payment(
+                            no,
+                            rs.getInt("paymentID"),
+                            rs.getInt("billID"),
+                            rs.getString("name"),
+                            rs.getDate("dueDate").toLocalDate(),
+                            rs.getDate("paymentDate").toLocalDate(),
+                            doubleFormatter(rs.getDouble("totalAmount")),
+                            rs.getDouble("penaltyAmount"),
+                            doubleFormatter(rs.getDouble("paymentAmount")),
+                            status,
+                            rs.getString("meterNumber"),
+                            rs.getString("meterLocation")
+                    );
+
+                    no++;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e; // Re-throw the exception
+        }
+        return payments;
+    }
     public Double doubleFormatter(double value){
         String formatted = String.format("%.2f", value*250);
         return Double.parseDouble(formatted);
+    }
+     public int insertReceipt(int paymentID) throws SQLException {
+        int receiptID = 0;
+        String insertInvoice = "INSERT INTO receipt(paymentID,	receiptDate,	receiptStatus	)\n" +
+                "VALUES(?, CURRENT_DATE, 1);";
+
+        try (Connection connection = dbConfig.getConnection();
+            PreparedStatement statement = connection.prepareStatement(insertInvoice, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setInt(1, paymentID);
+
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows > 0) {
+                ResultSet resultSet = statement.getGeneratedKeys();
+                if (resultSet.next()) {
+                    receiptID = resultSet.getInt(1);
+                    System.out.println("Payment record inserted successfully. InvoiceID: " + receiptID);
+                } else {
+                    // Handle no generated key scenario
+                    throw new SQLException("No invoice ID generated");
+                }
+            } else {
+                System.out.println("Failed to insert invoice record.");
+            }
+
+        }
+
+        return receiptID;
     }
 }

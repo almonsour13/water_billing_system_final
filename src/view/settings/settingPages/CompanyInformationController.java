@@ -38,12 +38,13 @@ public class CompanyInformationController implements Initializable {
     private TextField baranggay;
     @FXML
     private TextField purok;
-    private SettingsModel settingsModel;
+    private SettingsModel settingsModel = new SettingsModel();
     private Settings settings;
+    @FXML
+    private TextField contactNo;
+    @FXML
+    private TextField emailAd;
     
-    public CompanyInformationController(){
-        settingsModel = new SettingsModel();
-    }
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
@@ -62,6 +63,8 @@ public class CompanyInformationController implements Initializable {
             municipality.setText(settings.getCompanyMunicipality());
             baranggay.setText(settings.getCompanyBaranggay());
             purok.setText(settings.getCompanyPurok());
+            contactNo.setText(String.valueOf(settings.getContactNo()));
+            emailAd.setText(settings.getEmailAd());
                 
         }
     }
@@ -73,6 +76,8 @@ public class CompanyInformationController implements Initializable {
         municipality.setDisable(con);
         baranggay.setDisable(con);
         purok.setDisable(con);
+        contactNo.setDisable(con);
+        emailAd.setDisable(con);
         edit.setDisable(!con);
         cancelBtn.setDisable(con);
         saveBtn.setDisable(con);
@@ -84,7 +89,9 @@ public class CompanyInformationController implements Initializable {
                !Province.getText().isEmpty() &&
                !municipality.getText().isEmpty() &&
                !baranggay.getText().isEmpty() &&
-               !purok.getText().isEmpty();
+               !purok.getText().isEmpty()&&
+               !contactNo.getText().isEmpty()&&
+               !emailAd.getText().isEmpty();
     }
     @FXML
     private void edit(ActionEvent event) {
@@ -96,7 +103,6 @@ public class CompanyInformationController implements Initializable {
         setValue();
         disable(true);
     }
-
     @FXML
     private void save(ActionEvent event) throws SQLException {
         if (areAddressFieldsNotEmpty()) {
@@ -108,7 +114,9 @@ public class CompanyInformationController implements Initializable {
                     Province.getText(),
                     municipality.getText(),
                     baranggay.getText(),
-                    purok.getText()
+                    purok.getText(),
+                   contactNo.getText(),
+                    emailAd.getText()
                      );
             if(settings != null){
                 settingsModel.updateConInfo(newConInfo);

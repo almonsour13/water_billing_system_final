@@ -26,6 +26,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import model.bills.Bills;
 import model.bills.BillsModel;
+import model.meterReading.MeterReadingModel;
+import model.penalty.Penalty;
+import model.penalty.PenaltyModel;
+import view.settings.Settings;
+import view.settings.SettingsModel;
 import view.settings.settingPages.SystemLogsModel;
 /**
  *
@@ -35,6 +40,9 @@ public class billPdfGenerator {
     private BillsModel billModel;
     private  LoggedAccountSetter logAccount = new LoggedAccountSetter();
     private SystemLogsModel systemLogsModel = new SystemLogsModel();
+    private SettingsModel settingsModel = new SettingsModel();
+    private MeterReadingModel meterReadingModel = new MeterReadingModel();
+    private PenaltyModel penaltyModel= new PenaltyModel();
     public billPdfGenerator() {
         billModel = new BillsModel();
     }
@@ -50,31 +58,30 @@ public class billPdfGenerator {
     public void generatePdf(Bills bill) throws FileNotFoundException, DocumentException, IOException, SQLException {
         int invoiceID = billModel.insertInvoice(bill.getBillID());
         systemLogsModel.insertLog(logAccount.getAccount(), "Generated Invoice ID: "+invoiceID+" for Bill ID: "+bill.getId()+", consumer ("+bill.getName()+")");
-                                    
-
-        String companyName = "Water Billing System";
-        String companyAddress = "123 Main Street, Anytown, CA 12345";
-        String companyPhone = "(555) 555-1234";
-        String companyEmail = "billing@citywater.com";
+        Penalty penalty =   penaltyModel.getPenaltyDetailsById(bill.getBillID());                         
+        
+        Settings settings = settingsModel.getComInfo();
+        
+        String companyName = settings.getCompanyName();
+        String companyAddress = settings.getCompanyPurok()+", "+settings.getCompanyBaranggay()+", "+settings.getCompanyMunicipality()+", "+settings.getCompanyProvince();
+        String companyPhone = settings.getContactNo();
+        String companyEmail = settings.getEmailAd();
 
         String customerName = bill.getName();
-        String customerAddress = "456 Elm Street, Anytown, CA 12345";
-        String accountNumber = bill.getMeterNo();
+        String customerAddress = ""+settings.getCompanyBaranggay()+", "+settings.getCompanyMunicipality()+", "+settings.getCompanyProvince();
+        String meterNumber = bill.getMeterNo();
 
       //  String billingPeriod = new SimpleDateFormat("MMM-yyyy").format(bill.getReadingDate());
-       String billingPeriod = String.valueOf(bill.getReadingDate());
-        int currentMeterReading = bill.getCurReading();
-        int previousMeterReading = bill.getPrevReading();
-        double waterRate = 1.00;
-
-        int waterUsage = currentMeterReading - previousMeterReading;
-        double waterCharges = waterUsage * waterRate;
-
-        double wastewaterFee = 5.00;
-        double latePaymentFee = 0.00;
+        String billingPeriod = String.valueOf(bill.getBillingDate());
+        String currentMeterReading = String.valueOf(bill.getCurReading());
+        String previousMeterReading = String.valueOf(bill.getPrevReading());
+        double waterRate = meterReadingModel.getRate();
+        String dueDate = String.valueOf(bill.getDueDate());
+        int waterUsage = bill.getCurReading() - bill.getPrevReading();
+        double totalAmount = waterUsage * waterRate;
 
         Document document = new Document();
-        OutputStream outputStream = new FileOutputStream("invoices/Bills/" + customerName + "-" + billingPeriod + "-" + invoiceID + ".pdf");
+        OutputStream outputStream = new FileOutputStream("invoices/Bills/"+invoiceID+ ".pdf");
         PdfWriter writer = PdfWriter.getInstance(document, outputStream);
         document.open();
 
@@ -83,12 +90,17 @@ public class billPdfGenerator {
         logo.setAlignment(Image.ALIGN_CENTER);
         document.add(logo);
 
-        Paragraph title = new Paragraph("Water Billing Invoice", FontFactory.getFont(FontFactory.HELVETICA, 18, Font.BOLD));
-        title.setAlignment(Paragraph.ALIGN_CENTER);
-        document.add(title);
-
-        Paragraph companyInfo = new Paragraph(companyName + "\n" + companyAddress + "\n" + companyPhone + "\n" + companyEmail);
-        document.add(companyInfo);
+        Paragraph companyName1 = new Paragraph(companyName);
+        companyName1.setAlignment(companyName1.ALIGN_CENTER);
+        document.add(companyName1);
+        
+        Paragraph companyAddress1 = new Paragraph(companyAddress );
+        companyAddress1.setAlignment(companyAddress1.ALIGN_CENTER);
+        document.add(companyAddress1);
+        
+        Paragraph companyContacts = new Paragraph( companyPhone +" || " + companyEmail);
+        companyContacts.setAlignment(companyContacts.ALIGN_CENTER);
+        document.add(companyContacts);
 
         Paragraph invoiceDetails = new Paragraph("Invoice Number: " + invoiceID, FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
         invoiceDetails.add("\nInvoice Date: " + new Date());
@@ -97,7 +109,7 @@ public class billPdfGenerator {
         // Customer Information
         Paragraph customerInfo = new Paragraph("Bill To:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
         document.add(customerInfo);
-        customerInfo = new Paragraph(customerName + "\n" + customerAddress + "\n" + "Account Number: " + accountNumber);
+        customerInfo = new Paragraph(customerName + "\n" + customerAddress + "\n" + "Meter Number: " + meterNumber);
         document.add(customerInfo);
 
         // Billing Period
@@ -106,54 +118,54 @@ public class billPdfGenerator {
         document.add(billingPeriodSection);
 
         // Meter Readings and Usage
-        PdfPTable meterReadingsTable = new PdfPTable(3);
-        meterReadingsTable.setWidthPercentage(50f);
-        meterReadingsTable.addCell(new Phrase("Current Reading", FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD)));
-        meterReadingsTable.addCell(new Phrase("Previous Reading", FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD)));
-        meterReadingsTable.addCell(new Phrase("Water Usage", FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD)));
-        meterReadingsTable.addCell(String.valueOf(currentMeterReading));
-        meterReadingsTable.addCell(String.valueOf(previousMeterReading));
-        meterReadingsTable.addCell(String.valueOf(waterUsage));
-        document.add(meterReadingsTable);
-        Paragraph waterChargesSection = new Paragraph("Water Charges:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
-         // Continue adding content to the paragraph...
-        waterChargesSection.add(new Phrase(String.format("$%.2f", waterCharges), FontFactory.getFont(FontFactory.HELVETICA, 12)));
-        document.add(waterChargesSection);
+        Paragraph prevReading = new Paragraph("Previous Reading:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+        prevReading.add(new Phrase( previousMeterReading, FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        document.add(prevReading);
 
-        // Add additional charges if applicable
-        if (wastewaterFee > 0) {
-            Paragraph wastewaterFeeSection = new Paragraph("Wastewater Fee:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
-            wastewaterFeeSection.add(new Phrase(String.format("$%.2f", wastewaterFee), FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            document.add(wastewaterFeeSection);
+        Paragraph curReading = new Paragraph("Current Reading:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+        curReading.add(new Phrase(currentMeterReading, FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        document.add(curReading);
+
+        Paragraph waterCon = new Paragraph("Water Consumption:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+        waterCon.add(new Phrase(String.format("$%d", waterUsage), FontFactory.getFont(FontFactory.HELVETICA, 12)));
+        document.add(waterCon);
+
+        int penaltyAmount = 0;
+        if (penalty != null) {
+            Paragraph pAmount = new Paragraph("Penalty Charges:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+            pAmount.add(new Phrase(String.format("P%d", penalty.getPamount()), FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            document.add(pAmount);
+
+            penaltyAmount = penalty.getPamount();
+
+            Paragraph penaltyDate = new Paragraph("Penalty Date:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+            penaltyDate.add(new Phrase(String.format("P%d", penalty.getPdate()), FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            document.add(penaltyDate);
         }
-
-        // Add late payment fee if applicable
-        if (latePaymentFee > 0) {
-            Paragraph latePaymentFeeSection = new Paragraph("Late Payment Fee:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
-            latePaymentFeeSection.add(new Phrase(String.format("$%.2f", latePaymentFee), FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            document.add(latePaymentFeeSection);
-        }
-
-        // Calculate and display total amount due
-        double totalAmountDue = waterCharges + wastewaterFee + latePaymentFee;
+        
         Paragraph totalAmountSection = new Paragraph("Total Amount Due:", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
-        totalAmountSection.add(new Phrase(String.format("$%.2f", totalAmountDue), FontFactory.getFont(FontFactory.HELVETICA, 12, BOLD)));
+        totalAmountSection.add(new Phrase(String.format("P%.2f", totalAmount + penaltyAmount), FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD)));
         document.add(totalAmountSection);
+        
+        Paragraph status = new Paragraph("Status: :", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+        status.add(new Phrase(String.valueOf(bill.getBillingStatus()), FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD)));
+        document.add(status);
+
 
         // Add payment information and due date
         Paragraph paymentInformation = new Paragraph("Please pay your bill by the due date:");
-        paymentInformation.add(new Phrase(billingPeriod.split("-")[1].trim(), FontFactory.getFont(FontFactory.HELVETICA, 12, BOLD)));
+        paymentInformation.add(new Phrase(String.valueOf(bill.getDueDate()), FontFactory.getFont(FontFactory.HELVETICA, 12, BOLD)));
         document.add(paymentInformation);
-        document.add(new Paragraph("Payment methods (e.g., online portal, mail-in check)"));
 
         // Close the document
         document.close();
         outputStream.close();
         System.out.println("Water billing invoice generated successfully!");
         try {
-            Desktop.getDesktop().open(new File("invoices/Bills/"+customerName+"-"+billingPeriod+"-"+invoiceID+".pdf"));
+            Desktop.getDesktop().open(new File("invoices/Bills/"+invoiceID+".pdf"));
         } catch (IOException e) {
                 e.printStackTrace();
         }   
     }
+    
 }

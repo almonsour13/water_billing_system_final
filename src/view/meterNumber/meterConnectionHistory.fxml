@@ -6,7 +6,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -15,7 +14,7 @@
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="67.0" prefWidth="1080.0">
          <children>
-            <Label graphicTextGap="6.0" prefHeight="17.0" prefWidth="298.0" text="Meter Number Connection History:">
+            <Label fx:id="meterNumberLabel" graphicTextGap="6.0" prefHeight="17.0" prefWidth="440.0" text="Meter Number Connection History:">
                <font>
                   <Font size="14.0" />
                </font>
@@ -29,8 +28,6 @@
       </HBox>
       <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="702.0" spacing="10.0">
          <children>
-            <Label text="Search:" />
-            <TextField fx:id="searchVal" onKeyTyped="#search" prefHeight="25.0" prefWidth="170.0" promptText="Search" />
             <Label text="Month:" />
             <ChoiceBox fx:id="monthChoiceBox" prefHeight="25.0" prefWidth="70.0" />
             <Label text="Year:" />

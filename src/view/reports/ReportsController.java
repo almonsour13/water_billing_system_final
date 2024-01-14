@@ -15,10 +15,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.StackedBarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import model.dashboard.Dashboard;
 import model.reports.ReportModel;
 import model.reports.Reports;
 
@@ -34,11 +37,9 @@ public class ReportsController implements Initializable {
                         "Jan","Feb","Mar","Apr","May","Jun",
                         "Jul","Aug","Sep","Oct","Nov","Dec");
     @FXML
-    private StackedBarChart<?, ?> paymentCollectionChart;
+    private StackedBarChart<String, Double> paymentCollectionChart;
     @FXML
     private PieChart billsChart;
-    @FXML
-    private StackedBarChart<?, ?> paymentCollectionChart1;
     @FXML
     private PieChart billsChart1;
     @FXML
@@ -55,6 +56,8 @@ public class ReportsController implements Initializable {
     private ChoiceBox<String> monthChoiceBox;
     @FXML
     private ChoiceBox<String> yearChoiceBox;
+    @FXML
+    private LineChart<String, Integer> waterConsumptionChart;
     
     /**
      * Initializes the controller class.
@@ -64,6 +67,8 @@ public class ReportsController implements Initializable {
         try {
             setChoices();
             billChart();
+            paymentCollectionChart();
+            waterConsumptionChart();
         } catch (SQLException ex) {
             Logger.getLogger(ReportsController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -92,6 +97,49 @@ public class ReportsController implements Initializable {
         // Set percentages as text in labels
         collectedLabel.setText(String.format("%.1f%%", collectedPercentage));
         notCollectedLabel.setText(String.format("%.1f%%", notCollectedPercentage));
+    }
+    public void waterConsumptionChart() throws SQLException{
+        waterConsumptionChart.getData().clear();
+        LocalDate date = LocalDate.now();
+        int year = yearChoiceBox.getValue()== "All"?0: Integer.parseInt(yearChoiceBox.getValue());
+        if(year == 0){
+            year = date.getYear();
+        }
+        XYChart.Series<String, Integer> series = new XYChart.Series<>();
+        for(int a = 0; a<months.size(); a++){
+            String monthIndex = months.get(a);
+            
+            for (Reports reports : reportModel.getWaterConsumption(year)) {
+                if(reports.getWaterConsumptionPerMonth() != 0 && a == (reports.getMonth()-1)){
+                    series.getData().add(new XYChart.Data<>(monthIndex, reports.getWaterConsumptionPerMonth()));
+                }else{
+                    series.getData().add(new XYChart.Data<>(monthIndex, 0));
+                }
+            }
+        }
+        waterConsumptionChart.getData().add(series);
+    }
+     public void paymentCollectionChart() throws SQLException{
+        LocalDate date = LocalDate.now();
+        paymentCollectionChart.getData().clear();
+        int year = yearChoiceBox.getValue()== "All"?0: Integer.parseInt(yearChoiceBox.getValue());
+        if(year == 0){
+            year = date.getYear();
+        }
+        XYChart.Series<String, Double> series = new XYChart.Series<>();
+        for(int a = 0; a<months.size(); a++){
+            String monthIndex = months.get(a);
+            
+            for (Reports reports : reportModel.getPaymentIncomes(year)) {
+                if(reports.getPaymentCollectionPerMonth() != 0.0 && a == (reports.getMonth()-1)){
+                    series.getData().add(new XYChart.Data<>(monthIndex, reports.getPaymentCollectionPerMonth()));
+                }else{
+                    series.getData().add(new XYChart.Data<>(monthIndex, 0.0));
+                }
+            }
+        }
+
+        paymentCollectionChart.getData().add(series); 
     }
     public void setChoices() throws SQLException{
         yearChoiceBox.setValue("All");
@@ -137,6 +185,8 @@ public class ReportsController implements Initializable {
                 }
             }
             billChart();
+            waterConsumptionChart();
+            paymentCollectionChart();
         } catch (SQLException ex) {
             Logger.getLogger(ReportsController.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -9,37 +9,40 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.text.Font?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1100.0" spacing="10.0" stylesheets="@../../assets/dashboard.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AccountsController">
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="35.0" prefWidth="625.0" spacing="10.0">
          <children>
-            <TextField prefHeight="25.0" prefWidth="188.0" promptText="Search" />
-            <ChoiceBox fx:id="filterStatus" prefHeight="25.0" prefWidth="81.0" />
-            <Label text="Status:" />
             <Label text="Search:" />
-            <ChoiceBox fx:id="filterRole" prefHeight="25.0" prefWidth="81.0" />
+            <TextField fx:id="searchVal" prefHeight="25.0" prefWidth="188.0" promptText="Search" />
+            <Label text="Month:" />
+            <ChoiceBox fx:id="monthChoiceBox" prefHeight="25.0" prefWidth="81.0" />
+            <Label text="Year:" />
+            <ChoiceBox fx:id="yearChoiceBox" prefHeight="25.0" prefWidth="81.0" />
+            <Label text="Status:" />
+            <ChoiceBox fx:id="statusChoiceBox" prefHeight="25.0" prefWidth="81.0" />
             <Label text="Role:" />
-            <Button mnemonicParsing="false" onAction="#addAccount" prefHeight="27.0" prefWidth="105.0" styleClass="dashboard-button" text="Add Account" />
+            <ChoiceBox fx:id="roleChoiceBox" prefHeight="25.0" prefWidth="81.0" />
+            <Button fx:id="addAccountBtn" mnemonicParsing="false" onAction="#addAccount" prefHeight="27.0" prefWidth="63.0" styleClass="dashboard-button" />
          </children>
       </HBox>
       <HBox prefHeight="558.0" prefWidth="1080.0" spacing="10.0">
          <children>
             <VBox prefHeight="548.0" prefWidth="848.0" spacing="10.0" styleClass="header-container">
                <children>
-                  <TableView fx:id="accountTable" onMouseClicked="#selectAccount" prefHeight="538.0" prefWidth="841.0">
+                  <TableView fx:id="accountTable" prefHeight="538.0" prefWidth="841.0">
                      <columns>
-                        <TableColumn fx:id="noCol" prefWidth="40.0" text="No" />
-                        <TableColumn fx:id="idCol" prefWidth="38.0" text="ID" />
-                        <TableColumn fx:id="fNameCol" prefWidth="90.0" text="First Name" />
-                        <TableColumn fx:id="mNameCol" prefWidth="90.0" text="Middle Name" />
-                        <TableColumn fx:id="lNameCol" prefWidth="90.0" text="Last Name" />
+                        <TableColumn fx:id="noCol" prefWidth="26.0" text="No" />
+                        <TableColumn fx:id="fNameCol" prefWidth="100.0" styleClass="nameCol" text="First Name" />
+                        <TableColumn fx:id="mNameCol" prefWidth="94.0" styleClass="nameCol" text="Middle Name" />
+                        <TableColumn fx:id="lNameCol" prefWidth="90.0" styleClass="nameCol" text="Last Name" />
                         <TableColumn fx:id="uNameCol" prefWidth="90.0" text="User Name" />
-                        <TableColumn fx:id="pWordCol" prefWidth="90.0" text="Password" />
-                        <TableColumn fx:id="roleCol" prefWidth="69.0" text="Role" />
-                        <TableColumn fx:id="statusCol" prefWidth="79.0" text="Status" />
-                        <TableColumn fx:id="statusCol1" prefWidth="162.0" text="Acrtion" />
+                        <TableColumn fx:id="pWordCol" prefWidth="105.0" text="Password" />
+                        <TableColumn fx:id="roleCol" prefWidth="54.0" text="Role" />
+                        <TableColumn fx:id="statusCol" prefWidth="92.0" text="Status" />
+                        <TableColumn fx:id="actionCol" prefWidth="169.0" text="Action" />
                      </columns>
                   </TableView>
                </children>
@@ -47,10 +50,19 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
             </VBox>
-            <VBox prefHeight="402.0" prefWidth="235.0">
+            <VBox prefHeight="402.0" prefWidth="235.0" spacing="10.0">
                <children>
-                  <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="header-container">
+                  <VBox alignment="CENTER_LEFT" prefHeight="580.0" prefWidth="229.0" spacing="10.0" styleClass="header-container">
                      <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="209.0">
+                           <children>
+                              <Label fx:id="headerLabel" prefHeight="17.0" prefWidth="152.0" text="Account Information">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
                         <Label text="First Name:" />
                         <TextField fx:id="fNameField" disable="true" prefHeight="25.0" prefWidth="200.0" />
                         <Label text="Middle Name" />
@@ -70,11 +82,9 @@
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </padding>
                   </VBox>
-                  <Button fx:id="editBtn" disable="true" mnemonicParsing="false" onAction="#editInfo" prefHeight="36.0" prefWidth="112.0" styleClass="dashboard-button" text="Edit Info" />
-                  <Button fx:id="archiveBtn" disable="true" mnemonicParsing="false" onAction="#archive" prefHeight="36.0" prefWidth="112.0" styleClass="dashboard-button" text="Archive" />
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                      <children>
-                        <Button fx:id="cancelBtn" disable="true" mnemonicParsing="false" onAction="#cancel" prefHeight="36.0" prefWidth="112.0" styleClass="dashboard-button" text="Cancel" />
+                        <Button fx:id="cancelBtn" disable="true" mnemonicParsing="false" onAction="#cancel" prefHeight="36.0" prefWidth="112.0" styleClass="cancel-btn" text="Cancel" />
                         <Button fx:id="addSaveBtn" disable="true" mnemonicParsing="false" onAction="#addSave" prefHeight="36.0" prefWidth="112.0" styleClass="dashboard-button" text="Add" />
                      </children>
                   </HBox>

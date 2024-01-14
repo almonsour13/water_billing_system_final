@@ -4,6 +4,8 @@
  */
 package model.account;
 
+import java.time.LocalDate;
+
 /**
  *
  * @author Merry Ann
@@ -19,8 +21,9 @@ public class Account {
     private String role;
     private String status;
     private String name;
+    private LocalDate dateAdded;
 
-    public Account(int no, int id, String fName, String mName, String lName, String uName, String pWord, String role, String status) {
+    public Account(int no, int id, String fName, String mName, String lName, String uName, String pWord, String role, String status,LocalDate dateAdded) {
         this.no = no;
         this.id = id;
         this.fName = fName;
@@ -30,7 +33,18 @@ public class Account {
         this.pWord = pWord;
         this.role = role;
         this.status = status;
+        this.dateAdded = dateAdded;
     }
+
+    public LocalDate getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(LocalDate dateAdded) {
+        this.dateAdded = dateAdded;
+    }
+    
+    
     public Account(String name){
         this.name = name;
     }

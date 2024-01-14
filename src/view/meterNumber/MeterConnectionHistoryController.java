@@ -19,6 +19,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -47,8 +48,6 @@ public class MeterConnectionHistoryController implements Initializable {
                         "Jul","Aug","Sep","Oct","Nov","Dec");
 
     @FXML
-    private TextField searchVal;
-    @FXML
     private ChoiceBox<String> monthChoiceBox;
     @FXML
     private ChoiceBox<String> yearChoiceBox;
@@ -75,6 +74,8 @@ public class MeterConnectionHistoryController implements Initializable {
     private static Pane pageSetter = new Pane();
     @FXML
     private Button backBtn;
+    @FXML
+    private Label meterNumberLabel;
     
     /**
      * Initializes the controller class.
@@ -205,13 +206,8 @@ public class MeterConnectionHistoryController implements Initializable {
                     }
                 };
             }
-});
+        });
 
-//        try {
-//            setChoices();
-//        } catch (SQLException ex) {
-//            Logger.getLogger(ConnectionHistoryController.class.getName()).log(Level.SEVERE, null, ex);
-//        }
         monthChoiceBox.setOnAction(this::monthChoice);
         yearChoiceBox.setOnAction(this::yearChoice);
         statusChoiceBox.setOnAction(this::choiceBox);
@@ -231,8 +227,10 @@ public class MeterConnectionHistoryController implements Initializable {
             String splitDate[] = String.valueOf(meterNumber.getInstallationDate()).split("-");
             if(!yearChoiceBox.getItems().contains(splitDate[0])){
                 yearChoiceBox.getItems().add(splitDate[0]);
+                meterNumberLabel.setText("Meter Number "+meterNumber.getMeterNumber()+" Connection History:");
             }
         }
+        
         yearChoiceBox.setValue("All");
      
         monthChoiceBox.getItems().clear();
@@ -283,30 +281,39 @@ public class MeterConnectionHistoryController implements Initializable {
         } catch (SQLException ex) {
         }
     }
-    public void meterConnectionHistory() throws SQLException{meterNumberTable.getItems().clear();
-//        int month = monthChoiceBox.getValue()== "All"?0: months.indexOf(monthChoiceBox.getValue())+1;
-//        int year = yearChoiceBox.getValue()== "All"?0: Integer.parseInt(yearChoiceBox.getValue());
-//            int status;
-//            switch (statusChoiceBox.getValue()) {
-//                case "Active":
-//                    status = 1;
-//                    break;
-//                case "Disconnected":
-//                    status = 2;
-//                    break;
-//                case "Transferred":
-//                    status = 3;
-//                    break;
-//                case "Inactive":
-//                    status = 4;
-//                    break;
-//                default:
-//                    status = 0;
-//            }
-            meterNumberTable.getItems().addAll(meterNumberModel.getMeterConnectionHistoryByID(meterID));
-    //    meterNumberTable.getItems().addAll(meterNumberModel.filterConnectionHistory(month, year, searchVal.getText(), status, meterLocChoiceBox.getValue()));
+    public void meterConnectionHistory() throws SQLException {
+        meterNumberTable.getItems().clear();
+
+        int month = "All".equals(monthChoiceBox.getValue()) ? 0 : months.indexOf(monthChoiceBox.getValue()) + 1;
+        int year = "All".equals(yearChoiceBox.getValue()) ? 0 : Integer.parseInt(yearChoiceBox.getValue());
+
+        String selectedStatus = statusChoiceBox.getValue();
+        int status;
+
+        if (selectedStatus != null) {
+            switch (selectedStatus) {
+                case "Active":
+                    status = 1;
+                    break;
+                case "Disconnected":
+                    status = 2;
+                    break;
+                case "Transferred":
+                    status = 3;
+                    break;
+                case "Inactive":
+                    status = 4;
+                    break;
+                default:
+                    status = 0;
+            }
+        } else {
+            status = 0; // Default value if selectedStatus is null
+        }
+
+        //meterNumberTable.getItems().addAll(meterNumberModel.getMeterConnectionHistoryByID(meterID));
+         meterNumberTable.getItems().addAll(meterNumberModel.filterMeterConnectionHistoryByI(meterID, month, year, status, meterLocChoiceBox.getValue()));
     }
-    @FXML
     private void search(KeyEvent event) throws SQLException {
         meterConnectionHistory();
     }

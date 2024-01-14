@@ -72,7 +72,6 @@ public class MeterNumberModel {
                 (meterLoc != "All" ? (month != 0 || year != 0 || cStatus != 0 || mStatus != 0 || (searchVal != null && !searchVal.isEmpty()) ? "AND " : "") +
                         "meterLocation = ? " : "") +
                 ";";
-System.out.println("Generated SQL query: " + query);
 
         try (Connection connection = dbConfig.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -251,6 +250,62 @@ System.out.println("Generated SQL query: " + query);
         }    
         return meterNumber;
     }
+    public ObservableList<MeterNumber> filterMeterConnectionHistoryByI(int meterID, int month, int year, int status, String meterLoc) throws SQLException {
+    ObservableList<MeterNumber> meterNumber = FXCollections.observableArrayList();
+    String query = "SELECT * FROM get_connection_history " +
+        "WHERE meterID = ? " +
+        (month != 0 || year != 0 || status != 0 ||  (meterLoc != null && !meterLoc.equals("All")) ? "AND " : "") +
+        (month != 0 ? "MONTH(date) = ? " : "") +
+        (year != 0 ? (month != 0 ? "AND " : "") + "YEAR(date) = ? " : "") +
+        (status != 0 ? (month != 0 || year != 0 ? "AND " : "") + "mchStatus = ? " : "") +
+        (meterLoc != null && !meterLoc.equals("All") ? (month != 0 || year != 0 || status != 0? "AND " : "") +
+                "meterLocation = ? " : "") +
+        "ORDER BY mchID;";
+
+    System.out.println(query);
+    System.out.println(meterID);
+    try (Connection connection = dbConfig.getConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+
+        int parameterIndex = 1;
+        statement.setInt(parameterIndex++, meterID);
+        if (month != 0) statement.setInt(parameterIndex++, month);
+        if (year != 0) statement.setInt(parameterIndex++, year);
+        if (status != 0) statement.setInt(parameterIndex++, status);  // Assuming status corresponds to mchStatus
+        
+        if (meterLoc != null && !meterLoc.equals("All")) statement.setString(parameterIndex, meterLoc);
+        
+        try (ResultSet rs = statement.executeQuery()) {
+            int no = 1;
+            while (rs.next()) {
+                System.out.println(rs.getInt("cmID"));
+                String mstatus = (rs.getInt("meterStatus") == 1) ? "Active" : "Inactive";
+                String cMStatus = getStatus(rs.getInt("mchStatus"));
+
+                meterNumber.add(new MeterNumber(
+                        no,
+                        rs.getInt("cmID"),
+                        rs.getInt("cID"),
+                        rs.getInt("meterID"),
+                        rs.getString("meterNumber"),
+                        rs.getString("meterLocation"),
+                        rs.getDate("date").toLocalDate(),
+                        rs.getString("name"),
+                        10,
+                        cMStatus,
+                        mstatus
+                ));
+
+                no++;
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        throw e; // Re-throw the exception
+    }
+    return meterNumber;
+}
+
     
     
     public ObservableList<MeterNumber> getMeterNumberByConsumerID(int id) throws SQLException{
